@@ -8,17 +8,21 @@ import game_framework
 import title_state
 from warrior import Warrior
 from map import Map
+from monster import Monster
 
 name = "MainState"
 
 map = None
 warrior = None
+monster = None
 font = None
 
 
 def enter():
     global warrior
     global map
+    global monster
+    monster = Monster()
     map = Map()
     warrior = Warrior()
 
@@ -26,6 +30,8 @@ def enter():
 def exit():
     global warrior
     del warrior
+    global monster
+    del monster
     global map
     del map
 
@@ -51,10 +57,12 @@ def handle_events():
 
 def update():
     warrior.update()
+    monster.update()
 
 
 def draw():
     clear_canvas()
     map.draw()
+    monster.draw()
     warrior.draw()
     update_canvas()

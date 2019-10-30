@@ -131,13 +131,13 @@ class Warrior:
         self.tx, self.ty = (self.x - 16)//32, (self.y - 16)//32
         self.image = load_image('warriorLR.png')
         self.dir = 1
-        self.velocity = 0
         self.frame = 0
         self.timer = 0
         self.event_que = []
         self.cnt = 0
         self.xy = 0
         self.moving = 0
+        self.idl = 0
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 

@@ -66,31 +66,31 @@ class RunState:
 
     @staticmethod
     def do(warrior):
-        if warrior.cnt < 50:
+        if warrior.cnt < 32:
             if warrior.xy == 1:
-                if warrior.x < DISPLAY_SIZE_X:
+                if warrior.x < DISPLAY_SIZE_X - 16:
                     warrior.x += 1
                     warrior.cnt += 1
                 else:
-                    warrior.cnt = 50
+                    warrior.cnt = 32
             elif warrior.xy == 2:
-                if warrior.x > 0:
+                if warrior.x > 16:
                     warrior.x -= 1
                     warrior.cnt += 1
                 else:
-                    warrior.cnt = 50
+                    warrior.cnt = 32
             elif warrior.xy == 3:
-                if warrior.y < DISPLAY_SIZE_Y:
+                if warrior.y < DISPLAY_SIZE_Y - 16:
                     warrior.y += 1
                     warrior.cnt += 1
                 else:
-                    warrior.cnt = 50
+                    warrior.cnt = 32
             elif warrior.xy == 4:
-                if warrior.y > 0:
+                if warrior.y > 16:
                     warrior.y -= 1
                     warrior.cnt += 1
                 else:
-                    warrior.cnt = 50
+                    warrior.cnt = 32
             warrior.moving = 1
         else:
             warrior.moving = 0
@@ -124,7 +124,7 @@ next_state_table = {  # 이벤트 테이블에 관한 고찰, Runstate를 과연
 class Warrior:
 
     def __init__(self):
-        self.x, self.y = 0, 0
+        self.x, self.y = 15, 15
         self.image = load_image('warriorLR.png')
         self.dir = 1
         self.velocity = 0

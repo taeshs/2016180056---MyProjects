@@ -7,25 +7,27 @@ from pico2d import *
 import game_framework
 import title_state
 from warrior import Warrior
+from map import Map
 
 name = "MainState"
 
+map = None
 warrior = None
 font = None
 
 
 def enter():
     global warrior
-    global tile
-    tile = load_image('tiles0.png')
+    global map
+    map = Map()
     warrior = Warrior()
 
 
 def exit():
     global warrior
     del warrior
-    global tile
-    del tile
+    global map
+    del map
 
 
 def pause():
@@ -53,7 +55,6 @@ def update():
 
 def draw():
     clear_canvas()
-    for n in range(600):
-        tile.clip_draw(16, 48, 16, 16, 20 + 40 * (n % 10), 20 + 40 * (n // 10), 40, 40)
+    map.draw()
     warrior.draw()
     update_canvas()

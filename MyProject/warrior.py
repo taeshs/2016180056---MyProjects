@@ -1,5 +1,5 @@
 from pico2d import *
-
+import map
 # Boy Event
 UP_DOWN, DOWN_DOWN, RIGHT_DOWN, LEFT_DOWN, UP_UP, DOWN_UP, RIGHT_UP, LEFT_UP, M_STOP = range(9)
 
@@ -23,7 +23,11 @@ DISPLAY_SIZE_Y = 600
 class IdleState:
     @staticmethod
     def enter(warrior, event):
+        print("idlestate")
+        warrior.tx, warrior.ty = (warrior.x - 16) // 32, (warrior.y - 16) // 32
+        print((warrior.y - 16) // 32, (warrior.x - 16) // 32, map.MapLi[warrior.ty][warrior.tx])
         warrior.timer = 0
+
 
     @staticmethod
     def exit(warrior, event):
@@ -46,19 +50,27 @@ class IdleState:
 class RunState:
     @staticmethod
     def enter(warrior, event):
-        print("runstate")
         if warrior.moving == 0:
-            warrior.cnt = 0
+
+            print("runstate")
             if event == RIGHT_DOWN:
-                warrior.xy = 1
-                warrior.dir = 1
+                if map.MapLi[warrior.ty][warrior.tx + 1] == 2:
+                    warrior.xy = 1
+                    warrior.dir = 1
+                    warrior.cnt = 0
             elif event == LEFT_DOWN:
-                warrior.xy = 2
-                warrior.dir = 0
+                if map.MapLi[warrior.ty][warrior.tx - 1] == 2:
+                    warrior.xy = 2
+                    warrior.dir = 0
+                    warrior.cnt = 0
             elif event == UP_DOWN:
-                warrior.xy = 3
+                if map.MapLi[warrior.ty + 1][warrior.tx] == 2:
+                    warrior.xy = 3
+                    warrior.cnt = 0
             elif event == DOWN_DOWN:
-                warrior.xy = 4
+                if map.MapLi[warrior.ty - 1][warrior.tx] == 2:
+                    warrior.xy = 4
+                    warrior.cnt = 0
 
     @staticmethod
     def exit(warrior, event):
@@ -68,29 +80,19 @@ class RunState:
     def do(warrior):
         if warrior.cnt < 32:
             if warrior.xy == 1:
-                if warrior.x < DISPLAY_SIZE_X - 16:
-                    warrior.x += 1
-                    warrior.cnt += 1
-                else:
-                    warrior.cnt = 32
+                warrior.x += 1
+                warrior.cnt += 1
             elif warrior.xy == 2:
-                if warrior.x > 16:
-                    warrior.x -= 1
-                    warrior.cnt += 1
-                else:
-                    warrior.cnt = 32
+                warrior.x -= 1
+                warrior.cnt += 1
             elif warrior.xy == 3:
-                if warrior.y < DISPLAY_SIZE_Y - 16:
-                    warrior.y += 1
-                    warrior.cnt += 1
-                else:
-                    warrior.cnt = 32
+                warrior.y += 1
+                warrior.cnt += 1
             elif warrior.xy == 4:
-                if warrior.y > 16:
-                    warrior.y -= 1
-                    warrior.cnt += 1
-                else:
-                    warrior.cnt = 32
+                warrior.y -= 1
+                warrior.cnt += 1
+                #else:
+                 #   warrior.cnt = 32
             warrior.moving = 1
         else:
             warrior.moving = 0
@@ -106,16 +108,17 @@ class RunState:
         warrior.image.clip_draw(warrior.frame * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
 
 
-next_state_table = {  # 이벤트 테이블에 관한 고찰, Runstate를 과연 쓸것인가?(움직임의 함수화)
+next_state_table = {
     IdleState: {RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
                 UP_DOWN: RunState, DOWN_DOWN: RunState,
-                RIGHT_UP: IdleState, LEFT_UP: IdleState,
-                UP_UP: IdleState, DOWN_UP: IdleState,
+                RIGHT_UP: 999, LEFT_UP: 999,
+                UP_UP: 999, DOWN_UP: 999,
+                M_STOP: 999
                 },
-    RunState: {RIGHT_UP: RunState, LEFT_UP: RunState,
-               UP_UP: RunState, DOWN_UP: RunState,
-               RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-               UP_DOWN: RunState, DOWN_DOWN: RunState,
+    RunState: {RIGHT_UP: 999, LEFT_UP: 999,
+               UP_UP: 999, DOWN_UP: 999,
+               RIGHT_DOWN: 999, LEFT_DOWN: 999,
+               UP_DOWN: 999, DOWN_DOWN: 999,
                M_STOP: IdleState
                }
 }
@@ -124,7 +127,8 @@ next_state_table = {  # 이벤트 테이블에 관한 고찰, Runstate를 과연
 class Warrior:
 
     def __init__(self):
-        self.x, self.y = 15, 15
+        self.x, self.y = 16 + 64 + 32, 16 + 128 + 32
+        self.tx, self.ty = (self.x - 16)//32, (self.y - 16)//32
         self.image = load_image('warriorLR.png')
         self.dir = 1
         self.velocity = 0
@@ -148,12 +152,13 @@ class Warrior:
         self.event_que.insert(0, event)
 
     def update(self):
-        self.cur_state.do(self)
-        if len(self.event_que) > 0:
-            event = self.event_que.pop()
-            self.cur_state.exit(self, event)
-            self.cur_state = next_state_table[self.cur_state][event]
-            self.cur_state.enter(self, event)
+            self.cur_state.do(self)
+            if len(self.event_que) > 0:
+                event = self.event_que.pop()
+                if next_state_table[self.cur_state][event] != 999:
+                    self.cur_state.exit(self, event)
+                    self.cur_state = next_state_table[self.cur_state][event]
+                    self.cur_state.enter(self, event)
 
     def draw(self):
         self.cur_state.draw(self)
@@ -162,30 +167,3 @@ class Warrior:
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
-
-    def move(self, direc, plmi):  # move 는 정상동작함.
-        cnt = 0
-        # direc 1 = x, 0 = y
-        # plmi 1 = +, 0 = -
-        if direc == 1:
-            if plmi == 1:
-                if self.x < DISPLAY_SIZE_X:
-                    while cnt < 5:
-                        self.x += 1
-                        cnt += 1
-            elif plmi == 0:
-                if self.x > 0:
-                    while cnt < 5:
-                        self.x -= 1
-                        cnt += 1
-        elif direc == 0:
-            if plmi == 1:
-                if self.y < DISPLAY_SIZE_Y:
-                    while cnt < 5:
-                        self.y += 1
-                        cnt += 1
-            elif plmi == 0:
-                if self.y > 0:
-                    while cnt < 5:
-                        self.y -= 1
-                        cnt += 1

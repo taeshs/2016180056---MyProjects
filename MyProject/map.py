@@ -6,16 +6,17 @@ nomsize = 16
 fixsize = 32
 tilecnt = windsizX // fixsize * windsizY // fixsize
 
-MapLi = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+# 상하반전
+MapLi = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+         [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
+         [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
+         [0, 1, 2, 2, 2, 1, 2, 2, 1, 0],
+         [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
+         [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
+         [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,7 +29,6 @@ MapLi = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
 
-
 # #tilecnt = 10 * 20 = 200
 
 class Map:
@@ -37,8 +37,18 @@ class Map:
 
     def draw(self):
         for n in range(tilecnt):
-            if True:  # 벽 땅 공허 조건으로 바꾸자.
-                self.image.clip_draw(48, 16, nomsize, nomsize,
+            if MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 0:  # 벽 땅 공허 조건으로 바꾸자.
+                self.image.clip_draw(0, 48, nomsize, nomsize,
+                                     (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
+                                     (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
+                                     fixsize, fixsize)
+            elif MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 1:
+                self.image.clip_draw(0, 32, nomsize, nomsize,
+                                     (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
+                                     (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
+                                     fixsize, fixsize)
+            elif MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 2:
+                self.image.clip_draw(16, 16, nomsize, nomsize,
                                      (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
                                      (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
                                      fixsize, fixsize)

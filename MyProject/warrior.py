@@ -1,5 +1,6 @@
 from pico2d import *
 import map
+import main_state
 # Boy Event
 UP_DOWN, DOWN_DOWN, RIGHT_DOWN, LEFT_DOWN, UP_UP, DOWN_UP, RIGHT_UP, LEFT_UP, M_STOP = range(9)
 
@@ -53,7 +54,10 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
         if warrior.moving == 0:
             print("runstate")
             if event == RIGHT_DOWN:
-                if map.MapLi[warrior.ty][warrior.tx + 1] == 2:
+                if warrior.tx + 1 == main_state.monster.tx and warrior.ty == main_state.monster.ty:
+                    warrior.atkSt = 1
+                    pass # attack
+                elif map.MapLi[warrior.ty][warrior.tx + 1] == 2:
                     warrior.xy = 1
                     warrior.dir = 1
                     warrior.cnt = 0
@@ -104,7 +108,12 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
 
     @staticmethod
     def draw(warrior):
-        warrior.image.clip_draw(warrior.frame * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+        if warrior.atkSt == 1:
+            print("attack")
+            warrior.atkSt = 0
+        else:
+            warrior.image.clip_draw(warrior.frame * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+
 
 
 next_state_table = {
@@ -137,6 +146,7 @@ class Warrior:
         self.xy = 0
         self.moving = 0
         self.idl = 0
+        self.atkSt = 0
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 

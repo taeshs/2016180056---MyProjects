@@ -21,8 +21,8 @@ class IdleState:
         else:
             monster.idl = 0
         # warrior가 인식범위에 들어왔나? : event 줘서 그 이벤트 동안은 movestate로,
-        # movestate 동안 warrior 쪽으로 이동
-        # 바로 옆칸에 warrior 존재 시 공격. (공격 이동 모두 move 내에서 실행.)
+        # movestate 동안 warrior 쪽으로 이동 ( move event )
+        # 바로 옆칸에 warrior 존재 시 공격. (공격 이동 모두 move 내에서 실행.) ( attack event )
 
     @staticmethod
     def draw(monster):

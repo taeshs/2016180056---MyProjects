@@ -25,7 +25,7 @@ class IdleState:
     def enter(warrior, event):
         print("idlestate")
         warrior.tx, warrior.ty = (warrior.x - 16) // 32, (warrior.y - 16) // 32
-        print((warrior.y - 16) // 32, (warrior.x - 16) // 32, map.MapLi[warrior.ty][warrior.tx])
+        print("warrior : ", (warrior.y - 16) // 32, (warrior.x - 16) // 32, map.MapLi[warrior.ty][warrior.tx])
         warrior.timer = 0
 
 
@@ -47,11 +47,10 @@ class IdleState:
         # character.clip_draw(poz, pos, 12, 15, x, y, 36, 45)
 
 
-class RunState:
+class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그쪽 방향키 누를시 move 대신 attack
     @staticmethod
     def enter(warrior, event):
         if warrior.moving == 0:
-
             print("runstate")
             if event == RIGHT_DOWN:
                 if map.MapLi[warrior.ty][warrior.tx + 1] == 2:

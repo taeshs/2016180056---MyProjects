@@ -6,7 +6,7 @@ class IdleState:
     def enter(monster, event):
         print("idlestate")
         monster.tx, monster.ty = (monster.x - 16) // 32, (monster.y - 16) // 32
-        print((monster.y - 16) // 32, (monster.x - 16) // 32, map.MapLi[monster.ty][monster.tx])
+        print("monster : ", (monster.y - 16) // 32, (monster.x - 16) // 32, map.MapLi[monster.ty][monster.tx])
         monster.timer = 0
 
     @staticmethod
@@ -20,6 +20,9 @@ class IdleState:
             monster.idl = 1
         else:
             monster.idl = 0
+        # warrior가 인식범위에 들어왔나? : event 줘서 그 이벤트 동안은 movestate로,
+        # movestate 동안 warrior 쪽으로 이동
+        # 바로 옆칸에 warrior 존재 시 공격. (공격 이동 모두 move 내에서 실행.)
 
     @staticmethod
     def draw(monster):

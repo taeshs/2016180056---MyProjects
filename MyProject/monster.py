@@ -62,7 +62,7 @@ next_state_table = {
 class Monster:
 
     def __init__(self, x, y):
-        self.x, self.y = x, y            # 수정 필
+        self.x, self.y = x, y
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.image = load_image('gnoll.png')
         self.dir = 1

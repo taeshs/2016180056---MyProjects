@@ -189,8 +189,7 @@ next_state_table = {  # 999 -> IGNORE EVENT
                   UP_KEYUP: 999, DOWN_KEYUP: 999,
                   RIGHT_KEYDOWN: 999, LEFT_KEYDOWN: 999,
                   UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
-                  STOP_MOVING: 999, ATK_END: IdleState,
-                  ATK_UP: 999, ATK_DOWN: 999, ATK_RIGHT: 999, ATK_LEFT: 999
+                  STOP_MOVING: 999, ATK_END: IdleState
                   }
 }
 

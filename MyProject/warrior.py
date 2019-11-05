@@ -5,7 +5,8 @@ import game_world
 
 # Boy Event
 UP_KEYDOWN, DOWN_KEYDOWN, RIGHT_KEYDOWN, LEFT_KEYDOWN, \
-UP_KEYUP, DOWN_KEYUP, RIGHT_KEYUP, LEFT_KEYUP, STOP_MOVING = range(9)
+UP_KEYUP, DOWN_KEYUP, RIGHT_KEYUP, LEFT_KEYUP, STOP_MOVING, \
+ATK_UP, ATK_DOWN, ATK_RIGHT, ATK_LEFT, ATK_END = range(14)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_UP): UP_KEYDOWN,
@@ -50,30 +51,32 @@ class IdleState:
         # character.clip_draw(poz, pos, 12, 15, x, y, 36, 45)
 
 
-class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그쪽 방향키 누를시 move 대신 attack
+class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그쪽 방향키 누를시 move 대신 attack
     @staticmethod
     def enter(warrior, event):
         if warrior.moving == 0:
             print("runstate")
             if event == RIGHT_KEYDOWN:
+                warrior.dir = 1
                 for game_object in game_world.all_objects():
                     if game_object.return_obj_type() == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
                             warrior.atkSt = 1
+                            warrior.add_event(ATK_RIGHT)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
-                    warrior.dir = 1
                     warrior.cnt = 0
             elif event == LEFT_KEYDOWN:
+                warrior.dir = 0
                 for game_object in game_world.all_objects():
                     if game_object.return_obj_type() == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX - 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
                             warrior.atkSt = 1
+                            warrior.add_event(ATK_LEFT)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX - 1] == 2:
                     warrior.moveto = 'LEFT'
-                    warrior.dir = 0
                     warrior.cnt = 0
             elif event == UP_KEYDOWN:
                 for game_object in game_world.all_objects():
@@ -81,6 +84,7 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX == check_monster_tileX and warrior.tileY + 1 == check_monster_tileY:
                             warrior.atkSt = 1
+                            warrior.add_event(ATK_UP)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY + 1][warrior.tileX] == 2:
                     warrior.moveto = 'UP'
                     warrior.cnt = 0
@@ -90,6 +94,7 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX == check_monster_tileX and warrior.tileY - 1 == check_monster_tileY:
                             warrior.atkSt = 1
+                            warrior.add_event(ATK_DOWN)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'
                     warrior.cnt = 0
@@ -134,19 +139,59 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             warrior.image.clip_draw(warrior.frame * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
 
 
+class AttackState:
+    @staticmethod
+    def enter(warrior, event):
+        warrior.timer = 0
+        warrior.frame = 0
+
+    @staticmethod
+    def exit(warrior, event):
+        warrior.atkSt = 0
+        warrior.idl = 0
+        warrior.frame = 2
+
+    @staticmethod
+    def do(warrior):
+        if warrior.timer < 30:
+            warrior.frame += 1
+            warrior.timer += 1
+            if warrior.frame < 10:
+                warrior.idl = 0
+            elif warrior.frame < 20:
+                warrior.idl = 1
+            else:
+                warrior.idl = 2
+        else:
+            warrior.add_event(ATK_END)
+
+    @staticmethod
+    def draw(warrior):  # 13, 14, 15
+        warrior.image.clip_draw((warrior.idl + 13) * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+
+
 next_state_table = {  # 999 -> IGNORE EVENT
-    IdleState: {RIGHT_KEYDOWN: RunState, LEFT_KEYDOWN: RunState,
-                UP_KEYDOWN: RunState, DOWN_KEYDOWN: RunState,
+    IdleState: {RIGHT_KEYDOWN: MoveState, LEFT_KEYDOWN: MoveState,
+                UP_KEYDOWN: MoveState, DOWN_KEYDOWN: MoveState,
                 RIGHT_KEYUP: 999, LEFT_KEYUP: 999,
                 UP_KEYUP: 999, DOWN_KEYUP: 999,
-                STOP_MOVING: 999
+                STOP_MOVING: 999, ATK_END: 999
                 },
-    RunState: {RIGHT_KEYUP: 999, LEFT_KEYUP: 999,
-               UP_KEYUP: 999, DOWN_KEYUP: 999,
-               RIGHT_KEYDOWN: 999, LEFT_KEYDOWN: 999,
-               UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
-               STOP_MOVING: IdleState
-               }
+    MoveState: {RIGHT_KEYUP: 999, LEFT_KEYUP: 999,
+                UP_KEYUP: 999, DOWN_KEYUP: 999,
+                RIGHT_KEYDOWN: 999, LEFT_KEYDOWN: 999,
+                UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
+                STOP_MOVING: IdleState,
+                ATK_UP: AttackState, ATK_DOWN: AttackState, ATK_RIGHT: AttackState, ATK_LEFT: AttackState,
+                ATK_END: 999
+                },
+    AttackState: {RIGHT_KEYUP: 999, LEFT_KEYUP: 999,
+                  UP_KEYUP: 999, DOWN_KEYUP: 999,
+                  RIGHT_KEYDOWN: 999, LEFT_KEYDOWN: 999,
+                  UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
+                  STOP_MOVING: 999, ATK_END: IdleState,
+                  ATK_UP: 999, ATK_DOWN: 999, ATK_RIGHT: 999, ATK_LEFT: 999
+                  }
 }
 
 

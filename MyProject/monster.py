@@ -1,12 +1,14 @@
 from pico2d import *
 import map
 
+TILE_SIZE = 32
+
 class IdleState:
     @staticmethod
     def enter(monster, event):
         print("idlestate")
-        monster.tx, monster.ty = (monster.x - 16) // 32, (monster.y - 16) // 32
-        print("monster : ", (monster.y - 16) // 32, (monster.x - 16) // 32, map.MapLi[monster.ty][monster.tx])
+        monster.tileX, monster.tileY = (monster.x - 16) // 32, (monster.y - 16) // 32
+        print("monster : ", (monster.y - 16) // 32, (monster.x - 16) // 32, map.MapLi[monster.tileY][monster.tileX])
         monster.timer = 0
 
     @staticmethod
@@ -61,7 +63,7 @@ class Monster:
 
     def __init__(self):
         self.x, self.y = 16 + 64 + 32 + 64, 16 + 128 + 32 + 64            # 수정 필
-        self.tx, self.ty = (self.x - 16) // 32, (self.y - 16) // 32
+        self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.image = load_image('gnoll.png')
         self.dir = 1
         self.frame = 0

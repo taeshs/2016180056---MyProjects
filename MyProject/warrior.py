@@ -1,6 +1,7 @@
 from pico2d import *
 import map
 import main_state
+import game_world
 
 # Boy Event
 UP_KEYDOWN, DOWN_KEYDOWN, RIGHT_KEYDOWN, LEFT_KEYDOWN, \
@@ -55,24 +56,41 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
         if warrior.moving == 0:
             print("runstate")
             if event == RIGHT_KEYDOWN:
-                if warrior.tileX + 1 == main_state.monster.tileX and warrior.tileY == main_state.monster.tileY:
-                    warrior.atkSt = 1
-                    # attack
-                elif map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
+                for game_object in game_world.all_objects():
+                    if game_object.return_obj_type() == 'mon':
+                        check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                        if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
+                            warrior.atkSt = 1
+                if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
                     warrior.dir = 1
                     warrior.cnt = 0
             elif event == LEFT_KEYDOWN:
-                if map.MapLi[warrior.tileY][warrior.tileX - 1] == 2:
+                for game_object in game_world.all_objects():
+                    if game_object.return_obj_type() == 'mon':
+                        check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                        if warrior.tileX - 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
+                            warrior.atkSt = 1
+                if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX - 1] == 2:
                     warrior.moveto = 'LEFT'
                     warrior.dir = 0
                     warrior.cnt = 0
             elif event == UP_KEYDOWN:
-                if map.MapLi[warrior.tileY + 1][warrior.tileX] == 2:
+                for game_object in game_world.all_objects():
+                    if game_object.return_obj_type() == 'mon':
+                        check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                        if warrior.tileX == check_monster_tileX and warrior.tileY + 1 == check_monster_tileY:
+                            warrior.atkSt = 1
+                if warrior.atkSt != 1 and map.MapLi[warrior.tileY + 1][warrior.tileX] == 2:
                     warrior.moveto = 'UP'
                     warrior.cnt = 0
             elif event == DOWN_KEYDOWN:
-                if map.MapLi[warrior.tileY - 1][warrior.tileX] == 2:
+                for game_object in game_world.all_objects():
+                    if game_object.return_obj_type() == 'mon':
+                        check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                        if warrior.tileX == check_monster_tileX and warrior.tileY - 1 == check_monster_tileY:
+                            warrior.atkSt = 1
+                if warrior.atkSt != 1 and map.MapLi[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'
                     warrior.cnt = 0
 
@@ -176,3 +194,6 @@ class Warrior:
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
+
+    def return_obj_type(self):
+        return 'war'

@@ -61,8 +61,8 @@ next_state_table = {
 
 class Monster:
 
-    def __init__(self):
-        self.x, self.y = 16 + 64 + 32 + 64, 16 + 128 + 32 + 64            # 수정 필
+    def __init__(self, x, y):
+        self.x, self.y = x, y            # 수정 필
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.image = load_image('gnoll.png')
         self.dir = 1
@@ -97,4 +97,10 @@ class Monster:
 
     def draw(self):
         self.cur_state.draw(self)
+
+    def return_obj_type(self):
+        return 'mon'
+
+    def return_loc(self):
+        return self.tileX, self.tileY
 

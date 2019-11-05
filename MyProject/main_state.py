@@ -13,6 +13,8 @@ from monster import Monster
 
 name = "MainState"
 
+TILE_SIZE = 32
+
 map = None
 warrior = None
 monster = None
@@ -23,8 +25,10 @@ def enter():
     global warrior
     global map
     global monster
-    monster = Monster()
+    monster = Monster(176, 240)
+    monster2 = Monster(240, 240)        # spawn in 240, 240
     game_world.add_object(monster, 1)
+    game_world.add_object(monster2, 1)
     map = Map()
     game_world.add_object(map, 0)
     warrior = Warrior()

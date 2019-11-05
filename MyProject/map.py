@@ -35,6 +35,9 @@ class Map:
     def __init__(self):
         self.image = load_image('tiles0.png')
 
+    def update(self):
+        pass
+
     def draw(self):
         for n in range(tilecnt):
             if MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 0:  # 벽 땅 공허 조건으로 바꾸자.

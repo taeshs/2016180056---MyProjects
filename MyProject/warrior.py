@@ -57,7 +57,7 @@ class RunState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             if event == RIGHT_KEYDOWN:
                 if warrior.tileX + 1 == main_state.monster.tileX and warrior.tileY == main_state.monster.tileY:
                     warrior.atkSt = 1
-                    pass  # attack
+                    # attack
                 elif map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
                     warrior.dir = 1

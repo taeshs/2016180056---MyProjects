@@ -4,6 +4,7 @@ import os
 
 from pico2d import *
 
+import game_world
 import game_framework
 import title_state
 from warrior import Warrior
@@ -23,17 +24,15 @@ def enter():
     global map
     global monster
     monster = Monster()
+    game_world.add_object(monster, 1)
     map = Map()
+    game_world.add_object(map, 0)
     warrior = Warrior()
+    game_world.add_object(warrior, 1)
 
 
 def exit():
-    global warrior
-    del warrior
-    global monster
-    del monster
-    global map
-    del map
+    game_world.clear()
 
 
 def pause():
@@ -56,13 +55,12 @@ def handle_events():
             warrior.handle_event(event)
 
 def update():
-    warrior.update()
-    monster.update()
+    for game_objects in game_world.all_objects():
+        game_objects.update()
 
 
 def draw():
     clear_canvas()
-    map.draw()
-    monster.draw()
-    warrior.draw()
+    for game_objects in game_world.all_objects():
+        game_objects.draw()
     update_canvas()

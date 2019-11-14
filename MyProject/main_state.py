@@ -58,10 +58,14 @@ def handle_events():
         else:
             warrior.handle_event(event)
 
+
 def update():
     for game_objects in game_world.all_objects():
         game_objects.update()
-        #if game_objects.hp
+
+    for game_object in game_world.all_objects():
+        if game_object.hp <= 0:
+            game_object.dead()
 
 
 

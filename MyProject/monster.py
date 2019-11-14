@@ -1,6 +1,7 @@
 from pico2d import *
 import map
 import main_state
+import game_world
 
 TILE_SIZE = 32
 
@@ -19,18 +20,26 @@ class IdleState:
 
     @staticmethod
     def do(monster):
-        monster.timer = (monster.timer + 1) % 1000
-        if monster.timer > 800:
-            monster.idl = 1
-        else:
-            monster.idl = 0
+        if not monster.dead:
+            monster.timer = (monster.timer + 1) % 1000
+            if monster.timer > 800:
+                monster.idl = 1
+            else:
+                monster.idl = 0
+        if monster.dead:
+            monster.timer += 1
+            if monster.timer == 1000:
+                game_world.remove_object(monster)
         # warrior가 인식범위에 들어왔나? : event 줘서 그 이벤트 동안은 movestate로,
         # movestate 동안 warrior 쪽으로 이동 ( move event )
         # 바로 옆칸에 warrior 존재 시 공격. (공격 이동 모두 move 내에서 실행.) ( attack event )
 
     @staticmethod
     def draw(monster):
-        monster.image.clip_draw(monster.idl * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
+        if not monster.dead:
+            monster.image.clip_draw(monster.idl * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
+        if monster.dead:
+            pass
 
 
 class MoveState:
@@ -76,6 +85,7 @@ class Monster:
         self.xy = 0
         self.moving = 0
         self.idl = 0
+        self.dead = False
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
@@ -110,3 +120,7 @@ class Monster:
     def get_damage(self, damage):
         self.hp -= damage
         print(self.hp)
+
+    def dead(self):
+        self.dead = True
+        self.timer = 0

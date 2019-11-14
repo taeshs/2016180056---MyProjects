@@ -75,6 +75,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX - 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
                             warrior.atkSt = 1
+                            game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_LEFT)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX - 1] == 2:
                     warrior.moveto = 'LEFT'
@@ -85,6 +86,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX == check_monster_tileX and warrior.tileY + 1 == check_monster_tileY:
                             warrior.atkSt = 1
+                            game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_UP)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY + 1][warrior.tileX] == 2:
                     warrior.moveto = 'UP'
@@ -95,6 +97,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX == check_monster_tileX and warrior.tileY - 1 == check_monster_tileY:
                             warrior.atkSt = 1
+                            game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_DOWN)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'

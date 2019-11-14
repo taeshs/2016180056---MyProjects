@@ -13,6 +13,7 @@ class IdleState:
         monster.tileX, monster.tileY = (monster.x - 16) // 32, (monster.y - 16) // 32
         print("monster : ", (monster.y - 16) // 32, (monster.x - 16) // 32, map.MapLi[monster.tileY][monster.tileX])
         monster.timer = 0
+        monster.deadtimer = 0
 
     @staticmethod
     def exit(monster, event):
@@ -20,15 +21,15 @@ class IdleState:
 
     @staticmethod
     def do(monster):
-        if not monster.dead:
+        if not monster.isdead:
             monster.timer = (monster.timer + 1) % 1000
             if monster.timer > 800:
                 monster.idl = 1
             else:
                 monster.idl = 0
-        if monster.dead:
-            monster.timer += 1
-            if monster.timer == 1000:
+        if monster.isdead:
+            monster.deadtimer += 1
+            if monster.deadtimer == 80:
                 game_world.remove_object(monster)
         # warrior가 인식범위에 들어왔나? : event 줘서 그 이벤트 동안은 movestate로,
         # movestate 동안 warrior 쪽으로 이동 ( move event )
@@ -36,10 +37,10 @@ class IdleState:
 
     @staticmethod
     def draw(monster):
-        if not monster.dead:
+        if not monster.isdead:        # 7 8 9 10  monster.timer // 250
             monster.image.clip_draw(monster.idl * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
-        if monster.dead:
-            pass
+        if monster.isdead:
+            monster.image.clip_draw(((monster.deadtimer // 20) + 7) * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
 
 
 class MoveState:
@@ -85,7 +86,7 @@ class Monster:
         self.xy = 0
         self.moving = 0
         self.idl = 0
-        self.dead = False
+        self.isdead = False
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
@@ -122,5 +123,4 @@ class Monster:
         print(self.hp)
 
     def dead(self):
-        self.dead = True
-        self.timer = 0
+        self.isdead = True

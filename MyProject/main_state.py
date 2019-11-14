@@ -61,6 +61,8 @@ def handle_events():
 def update():
     for game_objects in game_world.all_objects():
         game_objects.update()
+        #if game_objects.hp
+
 
 
 def draw():

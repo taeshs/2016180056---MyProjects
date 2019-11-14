@@ -1,7 +1,9 @@
 from pico2d import *
 import map
+import main_state
 
 TILE_SIZE = 32
+
 
 class IdleState:
     @staticmethod
@@ -62,6 +64,7 @@ next_state_table = {
 class Monster:
 
     def __init__(self, x, y):
+        self.hp = 20
         self.x, self.y = x, y
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.image = load_image('gnoll.png')
@@ -104,3 +107,6 @@ class Monster:
     def return_loc(self):
         return self.tileX, self.tileY
 
+    def get_damage(self, damage):
+        self.hp -= damage
+        print(self.hp)

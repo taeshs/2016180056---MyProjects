@@ -63,6 +63,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
                             warrior.atkSt = 1
+                            game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_RIGHT)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
@@ -144,6 +145,14 @@ class AttackState:
     def enter(warrior, event):
         warrior.timer = 0
         warrior.frame = 0
+        #if event == ATK_UP:
+
+        #if event == ATK_DOWN:
+
+        #if event == ATK_RIGHT:
+
+        #if event == ATK_LEFT:
+
 
     @staticmethod
     def exit(warrior, event):
@@ -197,6 +206,8 @@ next_state_table = {  # 999 -> IGNORE EVENT
 class Warrior:
 
     def __init__(self):
+        self.hp = 50
+        self.atkDamage = 8
         self.x, self.y = 16 + TILE_SIZE * 3, 16 + TILE_SIZE * 5
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.image = load_image('warriorLR.png')

@@ -1,6 +1,8 @@
 from pico2d import *
 import map
 import main_state
+import title_state
+import game_framework
 import game_world
 
 # Boy Event
@@ -63,7 +65,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
                             warrior.atkSt = 1
-                            game_object.get_damage(warrior.atkDamage)
+                            warrior.get_damage(warrior.atkDamage)  # test
                             warrior.add_event(ATK_RIGHT)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
@@ -255,3 +257,11 @@ class Warrior:
 
     def return_obj_type(self):
         return 'war'
+
+    def get_damage(self, damage):
+        self.hp -= damage
+        print(self.hp)
+
+    def dead(self):
+        game_framework.change_state(title_state)        # dying animation , change_state( push_state ? ) to game_over.py
+

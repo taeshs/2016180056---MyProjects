@@ -29,7 +29,7 @@ class IdleState:
                 monster.idl = 0
         if monster.isdead:
             monster.deadtimer += 1
-            if monster.deadtimer == 80:
+            if monster.deadtimer == 96:
                 game_world.remove_object(monster)
         # warrior가 인식범위에 들어왔나? : event 줘서 그 이벤트 동안은 movestate로,
         # movestate 동안 warrior 쪽으로 이동 ( move event )
@@ -40,7 +40,7 @@ class IdleState:
         if not monster.isdead:        # 7 8 9 10  monster.timer // 250
             monster.image.clip_draw(monster.idl * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
         if monster.isdead:
-            monster.image.clip_draw(((monster.deadtimer // 20) + 7) * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
+            monster.image.clip_draw((((monster.deadtimer // 16) % 6) + 7) * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
 
 
 class MoveState:

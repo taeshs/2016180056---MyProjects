@@ -16,8 +16,10 @@ titlecnt = (map.windsizX // (map.fixsize * 2)) * (map.windsizY / (map.fixsize * 
 def enter():
     global banner
     global tile
+    global play
     banner = load_image('banners.png')
     tile = load_image('tiles0.png')
+    play = load_image('play.png')
 
 
 def exit():
@@ -25,6 +27,8 @@ def exit():
     del banner
     global tile
     del tile
+    global play
+    del play
 
 
 def pause():
@@ -56,6 +60,7 @@ def update():
 def draw():
     global banner
     global tile
+    global play
     clear_canvas()
     for n in range(50):
         if n % 2 == 0 :
@@ -69,6 +74,7 @@ def draw():
                            map.fixsize + (map.fixsize * 2) * (n // (map.windsizX / (map.fixsize * 2))),
                            map.fixsize * 2, map.fixsize * 2)
     banner.clip_draw(0, 192, 128, 64, map.windsizX / 2, map.windsizY / 3 * 2, 256, 128)
+    play.clip_draw(0, 0, 107, 133, map.windsizX / 2, map.windsizY / 3 * 1, 107, 133)
 
     update_canvas()
 

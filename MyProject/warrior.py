@@ -23,6 +23,10 @@ key_event_table = {
 
 TILE_SIZE = 32
 
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
+
 
 # Boy States
 
@@ -63,7 +67,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 for game_object in game_world.all_objects():
                     if game_object.return_obj_type() == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                        if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
+                        if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY \
+                                and game_object.hp > 0:
                             warrior.atkSt = 1
                             warrior.get_damage(warrior.atkDamage)  # test
                             warrior.add_event(ATK_RIGHT)
@@ -75,7 +80,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 for game_object in game_world.all_objects():
                     if game_object.return_obj_type() == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                        if warrior.tileX - 1 == check_monster_tileX and warrior.tileY == check_monster_tileY:
+                        if warrior.tileX - 1 == check_monster_tileX and warrior.tileY == check_monster_tileY \
+                                and game_object.hp > 0:
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_LEFT)
@@ -86,7 +92,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 for game_object in game_world.all_objects():
                     if game_object.return_obj_type() == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                        if warrior.tileX == check_monster_tileX and warrior.tileY + 1 == check_monster_tileY:
+                        if warrior.tileX == check_monster_tileX and warrior.tileY + 1 == check_monster_tileY \
+                                and game_object.hp > 0:
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_UP)
@@ -97,7 +104,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 for game_object in game_world.all_objects():
                     if game_object.return_obj_type() == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                        if warrior.tileX == check_monster_tileX and warrior.tileY - 1 == check_monster_tileY:
+                        if warrior.tileX == check_monster_tileX and warrior.tileY - 1 == check_monster_tileY \
+                                and game_object.hp > 0:
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_DOWN)
@@ -130,9 +138,10 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
         else:
             warrior.moving = 0
             warrior.add_event(STOP_MOVING)
-        warrior.frame = warrior.frame + 1
-        if warrior.frame == 8:
+        warrior.frame = (warrior.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if warrior.frame > 8:
             warrior.frame = 2
+        # boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         # warrior.x = clamp(25, warrior.x, DISPLAY_SIZE_X - 25)
         # warrior.y = clamp(25, warrior.y, DISPLAY_SIZE_Y - 25)
 
@@ -142,7 +151,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             print("attack")
             warrior.atkSt = 0
         else:
-            warrior.image.clip_draw(warrior.frame * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+            warrior.image.clip_draw(int(warrior.frame) * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
 
 
 class AttackState:

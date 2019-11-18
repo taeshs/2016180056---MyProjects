@@ -26,7 +26,7 @@ def enter():
     global map
     global monster
     monster = Monster(176, 240)
-    monster2 = Monster(240, 240)        # spawn in 240, 240
+    monster2 = Monster(240, 240)  # spawn in 240, 240
     game_world.add_object(monster, 1)
     game_world.add_object(monster2, 1)
     map = Map()
@@ -67,6 +67,9 @@ def update():
         if game_object.hp <= 0:
             game_object.dead()
 
+
+def get_warrior():
+    return warrior
 
 
 def draw():

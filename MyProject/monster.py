@@ -6,69 +6,8 @@ import game_world
 TILE_SIZE = 32
 
 
-class IdleState:
-    @staticmethod
-    def enter(monster, event):
-        print("idlestate")
-        monster.tileX, monster.tileY = (monster.x - 16) // 32, (monster.y - 16) // 32
-        print("monster : ", (monster.y - 16) // 32, (monster.x - 16) // 32, map.MapLi[monster.tileY][monster.tileX])
-        monster.timer = 0
-        monster.deadtimer = 0
-
-    @staticmethod
-    def exit(monster, event):
-        pass
-
-    @staticmethod
-    def do(monster):
-        if not monster.isdead:
-            monster.timer = (monster.timer + 1) % 1000
-            if monster.timer > 800:
-                monster.idl = 1
-            else:
-                monster.idl = 0
-        if monster.isdead:
-            monster.deadtimer += 1
-            if monster.deadtimer == 96:
-                game_world.remove_object(monster)
-        # warrior가 인식범위에 들어왔나? : event 줘서 그 이벤트 동안은 movestate로,
-        # movestate 동안 warrior 쪽으로 이동 ( move event )
-        # 바로 옆칸에 warrior 존재 시 공격. (공격 이동 모두 move 내에서 실행.) ( attack event )
-
-    @staticmethod
-    def draw(monster):
-        if not monster.isdead:        # 7 8 9 10  monster.timer // 250
-            monster.image.clip_draw(monster.idl * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
-        if monster.isdead:
-            monster.image.clip_draw((((monster.deadtimer // 16) % 6) + 7) * 12, monster.dir * 16, 12, 16, monster.x, monster.y, 24, 32)
-
-
-class MoveState:
-    @staticmethod
-    def enter(monster, event):
-        pass
-
-    @staticmethod
-    def exit(monster, event):
-        pass
-
-    @staticmethod
-    def do(monster):
-        pass
-
-    @staticmethod
-    def draw(monster):
-        pass
-
-
-next_state_table = {
-    IdleState: {
-
-    },
-    MoveState: {
-
-    }
-}
+# bt 에서 idle 일시 monster.timer = 0 , timer 로 idle animation 나오게.
+# bt 에서 dead 일시 monster.deadtimer = 0 , dead일때, dead animation 재생,
 
 
 class Monster:
@@ -81,36 +20,34 @@ class Monster:
         self.dir = 1
         self.frame = 0
         self.timer = 0
-        self.event_que = []
+        self.deadtimer = 0
         self.cnt = 0
         self.xy = 0
         self.moving = 0
         self.idl = 0
         self.isdead = False
-        self.cur_state = IdleState
-        self.cur_state.enter(self, None)
 
-    def change_state(self, state):
-        if len(self.event_que) > 0:
-            event = self.event_que.pop()
-            self.cur_state.exit(self, event)
-            self.cur_state = next_state_table[self.cur_state][event]
-            self.cur_state.enter(self, event)
-
-    def add_event(self, event):
-        self.event_que.insert(0, event)
 
     def update(self):
-        self.cur_state.do(self)
-        if len(self.event_que) > 0:
-            event = self.event_que.pop()
-            if next_state_table[self.cur_state][event] != 999:
-                self.cur_state.exit(self, event)
-                self.cur_state = next_state_table[self.cur_state][event]
-                self.cur_state.enter(self, event)
+        self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
+        print("monster : ", (self.y - 16) // 32, (self.x - 16) // 32, map.MapLi[self.tileY][self.tileX])
+        if not self.isdead:
+            self.timer = (self.timer + 1) % 1000
+            if self.timer > 800:
+                self.idl = 1
+            else:
+                self.idl = 0
+        if self.isdead:
+            self.deadtimer += 1
+            if self.deadtimer == 96:
+                game_world.remove_object(self)
 
     def draw(self):
-        self.cur_state.draw(self)
+        if not self.isdead:  # 7 8 9 10  monster.timer // 250
+            self.image.clip_draw(self.idl * 12, self.dir * 16, 12, 16, self.x, self.y, 24, 32)
+        if self.isdead:
+            self.image.clip_draw((((self.deadtimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.x,
+                                    self.y, 24, 32)
 
     def return_obj_type(self):
         return 'mon'

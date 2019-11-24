@@ -33,6 +33,8 @@ def enter():
     game_world.add_object(map, 0)
     warrior = Warrior()
     game_world.add_object(warrior, 1)
+    global once
+    once = Once()
 
 
 def exit():
@@ -66,7 +68,9 @@ def update():
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
             game_object.isdead = True
-            print(game_object.type, 'is dead!')
+            if once.call == 0:
+                once.print(game_object.type)
+                once.call = 1
 
 
 def get_warrior():
@@ -78,3 +82,11 @@ def draw():
     for game_objects in game_world.all_objects():
         game_objects.draw()
     update_canvas()
+
+
+class Once:
+    def __init__(self):
+        self.call = 0
+
+    def print(self, atype):
+        print(atype, 'is dead!')

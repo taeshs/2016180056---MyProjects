@@ -60,10 +60,25 @@ class Monster:
         return BehaviorTree.SUCCESS
 
     def find_warrior(self):
-        return BehaviorTree.FAIL
+        warrior = main_state.get_warrior()
+        distance = (warrior.tileX - self.tileX) ** 2 + (warrior.tileY - self.tileY) ** 2
+        if distance < 9:
+            if warrior.tileX < self.tileX:
+                self.dir = 0
+            elif warrior.tileX > self.tileX:
+                self.dir = 1
+            if ((warrior.tileX - self.tileX) ** 2) > ((warrior.tileY - self.tileY) ** 2):
+                if warrior.tileX < self.tileX:
+                    self.dir = 0
+                elif warrior.tileX > self.tileX:
+                    self.dir = 1
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
         pass
 
     def move_to_warrior(self):
+        self.state = 3
         pass
 
     def build_behavior_tree(self):
@@ -117,6 +132,9 @@ class Monster:
             self.image.clip_draw(3 * 12, self.dir * 16, 12, 16, self.x,
                                  self.y, 24, 32)
             # 3, 4
+        if self.state == 3:
+            self.image.clip_draw(6 * 12, self.dir * 16, 12, 16, self.x,
+                                 self.y, 24, 32)
 
     def return_obj_type(self):
         return self.type

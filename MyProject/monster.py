@@ -57,8 +57,7 @@ class Monster:
 
     def attack_warrior(self):
         warrior = main_state.get_warrior()
-        warrior.hp -= self.atkDamage
-        print(warrior.hp)
+        warrior.get_damage(self.atkDamage)
         self.turn = 0
         self.state = 2
         return BehaviorTree.SUCCESS
@@ -177,7 +176,7 @@ class Monster:
 
     def get_damage(self, damage):
         self.hp -= damage
-        print(self.hp)
+        print("monster's HP:", self.hp)
 
     def dead(self):
         self.isdead = True

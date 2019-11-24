@@ -190,9 +190,7 @@ class AttackState:
             else:
                 warrior.idl = 2
         else:
-            for game_object in game_world.all_objects():
-                if game_object.type == 'mon':
-                    game_object.turn = 1
+
             warrior.add_event(ATK_END)
 
     @staticmethod
@@ -275,7 +273,7 @@ class Warrior:
 
     def get_damage(self, damage):
         self.hp -= damage
-        print(self.hp)
+        print("warrior's HP: ", self.hp)
 
     def dead(self):
         game_framework.change_state(title_state)        # dying animation , change_state( push_state ? ) to game_over.py

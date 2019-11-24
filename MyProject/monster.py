@@ -11,6 +11,7 @@ TILE_SIZE = 32
 
 class Monster:
     image = None
+
     def __init__(self, x, y):
         if Monster.image is None:
             Monster.image = load_image('gnoll.png')
@@ -24,11 +25,12 @@ class Monster:
         self.type = 'mon'
         self.isdead = False
         self.deadtimer = 0
+        self.turn = 0  # turn == 1 : movable
         self.cnt = 0
         self.xy = 0
         self.moving = 0
         self.idl = 0
-        self.state = 0    # 0 idle 1 dead
+        self.state = 0  # 0 idle 1 dead
         self.build_behavior_tree()
 
     def idle_status(self):
@@ -56,6 +58,8 @@ class Monster:
     def attack_warrior(self):
         warrior = main_state.get_warrior()
         warrior.hp -= self.atkDamage
+        print(warrior.hp)
+        self.turn = 0
         self.state = 2
         return BehaviorTree.SUCCESS
 
@@ -79,7 +83,8 @@ class Monster:
 
     def move_to_warrior(self):
         self.state = 3
-        pass
+        self.turn = 0
+        return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
         is_dead_node = LeafNode("is dead?", self.is_dead)
@@ -108,8 +113,9 @@ class Monster:
         self.bt = BehaviorTree(monster_status)
 
     def update(self):
-        self.bt.run()
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
+        if self.turn == 1:
+            self.bt.run()
         # print("monster : ", (self.y - 16) // 32, (self.x - 16) // 32, map.MapLi[self.tileY][self.tileX])
         if self.state == 0:
             self.timer = (self.timer + 1) % 1000
@@ -127,7 +133,7 @@ class Monster:
             self.image.clip_draw(self.idl * 12, self.dir * 16, 12, 16, self.x, self.y, 24, 32)
         if self.state == 1:
             self.image.clip_draw((((self.deadtimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.x,
-                                    self.y, 24, 32)
+                                 self.y, 24, 32)
         if self.state == 2:
             self.image.clip_draw(3 * 12, self.dir * 16, 12, 16, self.x,
                                  self.y, 24, 32)
@@ -135,9 +141,6 @@ class Monster:
         if self.state == 3:
             self.image.clip_draw(6 * 12, self.dir * 16, 12, 16, self.x,
                                  self.y, 24, 32)
-
-    def return_obj_type(self):
-        return self.type
 
     def return_loc(self):
         return self.tileX, self.tileY

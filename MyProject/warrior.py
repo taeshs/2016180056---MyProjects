@@ -65,7 +65,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             if event == RIGHT_KEYDOWN:
                 warrior.dir = 1
                 for game_object in game_world.all_objects():
-                    if game_object.return_obj_type() == 'mon':
+                    if game_object.type == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY \
                                 and game_object.hp > 0:
@@ -78,7 +78,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             elif event == LEFT_KEYDOWN:
                 warrior.dir = 0
                 for game_object in game_world.all_objects():
-                    if game_object.return_obj_type() == 'mon':
+                    if game_object.type == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX - 1 == check_monster_tileX and warrior.tileY == check_monster_tileY \
                                 and game_object.hp > 0:
@@ -90,7 +90,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                     warrior.cnt = 0
             elif event == UP_KEYDOWN:
                 for game_object in game_world.all_objects():
-                    if game_object.return_obj_type() == 'mon':
+                    if game_object.type == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX == check_monster_tileX and warrior.tileY + 1 == check_monster_tileY \
                                 and game_object.hp > 0:
@@ -102,7 +102,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                     warrior.cnt = 0
             elif event == DOWN_KEYDOWN:
                 for game_object in game_world.all_objects():
-                    if game_object.return_obj_type() == 'mon':
+                    if game_object.type == 'mon':
                         check_monster_tileX, check_monster_tileY = game_object.return_loc()
                         if warrior.tileX == check_monster_tileX and warrior.tileY - 1 == check_monster_tileY \
                                 and game_object.hp > 0:
@@ -112,6 +112,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'
                     warrior.cnt = 0
+
 
     @staticmethod
     def exit(warrior, event):
@@ -137,6 +138,9 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             warrior.moving = 1
         else:
             warrior.moving = 0
+            for game_object in game_world.all_objects():
+                if game_object.type == 'mon':
+                    game_object.turn = 1
             warrior.add_event(STOP_MOVING)
         warrior.frame = (warrior.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if warrior.frame > 8:
@@ -186,6 +190,9 @@ class AttackState:
             else:
                 warrior.idl = 2
         else:
+            for game_object in game_world.all_objects():
+                if game_object.type == 'mon':
+                    game_object.turn = 1
             warrior.add_event(ATK_END)
 
     @staticmethod
@@ -265,9 +272,6 @@ class Warrior:
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
-
-    def return_obj_type(self):
-        return self.type
 
     def get_damage(self, damage):
         self.hp -= damage

@@ -57,6 +57,3 @@ class Map:
                                      (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
                                      (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
                                      fixsize, fixsize)
-
-    def return_obj_type(self):
-        return self.type

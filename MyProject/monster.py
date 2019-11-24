@@ -64,6 +64,7 @@ class Monster:
         return BehaviorTree.SUCCESS
 
     def find_warrior(self):
+        disrupt = 0
         warrior = main_state.get_warrior()
         distance = (warrior.tileX - self.tileX) ** 2 + (warrior.tileY - self.tileY) ** 2
         if distance < 9:
@@ -72,10 +73,39 @@ class Monster:
             elif warrior.tileX > self.tileX:
                 self.dir = 1
             if ((warrior.tileX - self.tileX) ** 2) > ((warrior.tileY - self.tileY) ** 2):
-                if warrior.tileX < self.tileX:
-                    self.dir = 0
-                elif warrior.tileX > self.tileX:
-                    self.dir = 1
+                if warrior.tileX < self.tileX and map.MapLi[self.tileY][self.tileX - 1] == 2:
+                    for game_object in game_world.all_objects():
+                        if game_object.type == 'mon':
+                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                            if self.tileX - 1 == check_monster_tileX and self.tileY == check_monster_tileY:
+                                disrupt = 1
+                    if disrupt == 0:
+                        self.x -= TILE_SIZE
+                elif warrior.tileX > self.tileX and map.MapLi[self.tileY][self.tileX + 1] == 2:
+                    for game_object in game_world.all_objects():
+                        if game_object.type == 'mon':
+                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                            if self.tileX + 1 == check_monster_tileX and self.tileY == check_monster_tileY:
+                                disrupt = 1
+                    if disrupt == 0:
+                        self.x += TILE_SIZE
+            else:
+                if warrior.tileY < self.tileY and map.MapLi[self.tileY - 1][self.tileX] == 2:
+                    for game_object in game_world.all_objects():
+                        if game_object.type == 'mon':
+                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                            if self.tileX == check_monster_tileX and self.tileY - 1 == check_monster_tileY:
+                                disrupt = 1
+                    if disrupt == 0:
+                        self.y -= TILE_SIZE
+                elif warrior.tileY > self.tileY and map.MapLi[self.tileY + 1][self.tileX] == 2:
+                    for game_object in game_world.all_objects():
+                        if game_object.type == 'mon':
+                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                            if self.tileX == check_monster_tileX and self.tileY + 1 == check_monster_tileY:
+                                disrupt = 1
+                    if disrupt == 0:
+                        self.y += TILE_SIZE
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

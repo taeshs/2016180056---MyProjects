@@ -35,6 +35,7 @@ class Map:
     def __init__(self):
         self.image = load_image('tiles0.png')
         self.hp = 99999
+        self.type = 'map'
 
     def update(self):
         pass
@@ -58,4 +59,4 @@ class Map:
                                      fixsize, fixsize)
 
     def return_obj_type(self):
-        return 'map'
+        return self.type

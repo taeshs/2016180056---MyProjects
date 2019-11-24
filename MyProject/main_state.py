@@ -65,7 +65,8 @@ def update():
 
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
-            game_object.dead()
+            game_object.isdead = True
+            print(game_object.type, 'is dead!')
 
 
 def get_warrior():

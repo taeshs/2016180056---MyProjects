@@ -7,8 +7,6 @@ from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
 TILE_SIZE = 32
 
 
-# bt 에서 idle 일시 monster.timer = 0 , timer 로 idle animation 나오게.
-# bt 에서 dead 일시 monster.deadtimer = 0 , dead일때, dead animation 재생, // ?
 # bt 행동우선순위  - attack - move - idle
 
 class Monster:
@@ -17,11 +15,14 @@ class Monster:
         if Monster.image is None:
             Monster.image = load_image('gnoll.png')
         self.hp = 20
+        self.atkDamage = 4
         self.x, self.y = x, y
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.dir = 1
         self.frame = 0
         self.timer = 0
+        self.type = 'mon'
+        self.isdead = False
         self.deadtimer = 0
         self.cnt = 0
         self.xy = 0
@@ -38,22 +39,38 @@ class Monster:
         self.state = 1
         return BehaviorTree.SUCCESS
 
+    def is_dead(self):
+        if self.isdead:
+            return BehaviorTree.SUCCESS
+        elif not self.isdead:
+            return BehaviorTree.FAIL
+
     def is_nearing(self):
-        pass
+        warrior = main_state.get_warrior()
+        distance = (warrior.tileX - self.tileX) ** 2 + (warrior.tileY - self.tileY) ** 2
+        if distance == 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def attack_warrior(self):
-        pass
+        warrior = main_state.get_warrior()
+        warrior.hp -= self.atkDamage
+        self.state = 2
+        return BehaviorTree.SUCCESS
 
     def find_warrior(self):
+        return BehaviorTree.FAIL
         pass
 
     def move_to_warrior(self):
         pass
 
     def build_behavior_tree(self):
-        idle_node = LeafNode("idle", self.idle_status)
-
-        dead_node = LeafNode("dead", self.dead_status)      # is_dead 랑 dead로 나눠야 됨.
+        is_dead_node = LeafNode("is dead?", self.is_dead)
+        dead_node = LeafNode("dead", self.dead_status)
+        dead_stat_node = SequenceNode("dead")
+        dead_stat_node.add_children(is_dead_node, dead_node)
 
         is_nearing_node = LeafNode("is nearing?", self.is_nearing)
         attack_warrior_node = LeafNode("attack node", self.attack_warrior)
@@ -68,14 +85,17 @@ class Monster:
         monster_moves_node = SelectorNode("moves")
         monster_moves_node.add_children(attack_node, chase_node)
 
-        monster_status = SelectorNode("monster status")
-        monster_status.add_children(dead_node, monster_moves_node, idle_node)
+        idle_node = LeafNode("idle", self.idle_status)
 
-        self.bt = monster_status
+        monster_status = SelectorNode("monster status")
+        monster_status.add_children(dead_stat_node, monster_moves_node, idle_node)
+
+        self.bt = BehaviorTree(monster_status)
 
     def update(self):
+        self.bt.run()
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
-        print("monster : ", (self.y - 16) // 32, (self.x - 16) // 32, map.MapLi[self.tileY][self.tileX])
+        # print("monster : ", (self.y - 16) // 32, (self.x - 16) // 32, map.MapLi[self.tileY][self.tileX])
         if self.state == 0:
             self.timer = (self.timer + 1) % 1000
             if self.timer > 800:
@@ -93,9 +113,13 @@ class Monster:
         if self.state == 1:
             self.image.clip_draw((((self.deadtimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.x,
                                     self.y, 24, 32)
+        if self.state == 2:
+            self.image.clip_draw(3 * 12, self.dir * 16, 12, 16, self.x,
+                                 self.y, 24, 32)
+            # 3, 4
 
     def return_obj_type(self):
-        return 'mon'
+        return self.type
 
     def return_loc(self):
         return self.tileX, self.tileY

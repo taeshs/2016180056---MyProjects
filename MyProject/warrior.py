@@ -70,7 +70,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                         if warrior.tileX + 1 == check_monster_tileX and warrior.tileY == check_monster_tileY \
                                 and game_object.hp > 0:
                             warrior.atkSt = 1
-                            warrior.get_damage(warrior.atkDamage)  # test
+                            game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_RIGHT)
                 if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
@@ -228,8 +228,10 @@ class Warrior:
         self.dir = 1  # 1 = R , 0 = L
         self.frame = 0
         self.timer = 0
+        self.isdead = False
         self.event_que = []
         self.cnt = 0
+        self.type = 'war'
         self.moveto = 0
         self.moving = 0
         self.idl = 0
@@ -265,7 +267,7 @@ class Warrior:
             self.add_event(key_event)
 
     def return_obj_type(self):
-        return 'war'
+        return self.type
 
     def get_damage(self, damage):
         self.hp -= damage

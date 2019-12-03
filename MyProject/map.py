@@ -1,7 +1,7 @@
 from pico2d import *
 
 windsizX = 320
-windsizY = 640
+windsizY = 576
 nomsize = 16
 fixsize = 32
 tilecnt = windsizX // fixsize * windsizY // fixsize

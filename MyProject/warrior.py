@@ -225,7 +225,9 @@ next_state_table = {  # 999 -> IGNORE EVENT
 class Warrior:
 
     def __init__(self):
+        self.maxHp = 50
         self.hp = 50
+        self.hpPercent = 1
         self.atkDamage = 8
         self.x, self.y = 16 + TILE_SIZE * 3, 16 + TILE_SIZE * 5
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
@@ -233,7 +235,7 @@ class Warrior:
         self.dir = 1  # 1 = R , 0 = L
         self.frame = 0
         self.timer = 0
-        self.isdead = False
+        self.isDead = False
         self.event_que = []
         self.cnt = 0
         self.type = 'war'
@@ -255,6 +257,7 @@ class Warrior:
         self.event_que.insert(0, event)
 
     def update(self):
+        self.hpPercent = self.hp / self.maxHp
         self.cur_state.do(self)
         if len(self.event_que) > 0:
             event = self.event_que.pop()

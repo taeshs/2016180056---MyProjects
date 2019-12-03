@@ -23,8 +23,8 @@ class Monster:
         self.frame = 0
         self.timer = 0
         self.type = 'mon'
-        self.isdead = False
-        self.deadtimer = 0
+        self.isDead = False
+        self.deadTimer = 0
         self.turn = 0  # turn == 1 : movable
         self.cnt = 0
         self.xy = 0
@@ -42,9 +42,9 @@ class Monster:
         return BehaviorTree.SUCCESS
 
     def is_dead(self):
-        if self.isdead:
+        if self.isDead:
             return BehaviorTree.SUCCESS
-        elif not self.isdead:
+        elif not self.isDead:
             return BehaviorTree.FAIL
 
     def is_nearing(self):
@@ -153,15 +153,15 @@ class Monster:
             else:
                 self.idl = 0
         if self.state == 1:
-            self.deadtimer += 1
-            if self.deadtimer == 96:
+            self.deadTimer += 1
+            if self.deadTimer == 96:
                 game_world.remove_object(self)
 
     def draw(self):
         if self.state == 0:  # 7 8 9 10  monster.timer // 250
             self.image.clip_draw(self.idl * 12, self.dir * 16, 12, 16, self.x, self.y, 24, 32)
         if self.state == 1:
-            self.image.clip_draw((((self.deadtimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.x,
+            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.x,
                                  self.y, 24, 32)
         if self.state == 2:
             self.image.clip_draw(3 * 12, self.dir * 16, 12, 16, self.x,
@@ -179,4 +179,4 @@ class Monster:
         print("monster's HP:", self.hp)
 
     def dead(self):
-        self.isdead = True
+        self.isDead = True

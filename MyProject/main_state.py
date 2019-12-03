@@ -19,13 +19,23 @@ map = None
 warrior = None
 monster = None
 font = None
-
+UI = None
+HP_BAR = None
+hpPercent = None
+once = None
+charImage = None
+font = None
 
 def enter():
     global UI
     global HP_BAR
     UI = load_image('status_pane.png')
     HP_BAR = load_image('hp_bar.png')
+    global charImage
+    charImage = load_image('warriorLR.png')
+    global font
+    font = load_image('font2x.png')
+
     global warrior
     global map
     global monster
@@ -71,12 +81,14 @@ def update():
 
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
-            game_object.isdead = True
+            game_object.isDead = True
             if once.call == 0:
                 once.print(game_object.type)
                 once.call = 1
+
     global hpPercent
     hpPercent = int(50 * warrior.hpPercent)
+
 
 def get_warrior():
     return warrior
@@ -88,6 +100,15 @@ def draw():
         game_objects.draw()
     UI.clip_draw(0, 0, 128, 64, 160, 498, 320, 160)
     HP_BAR.clip_draw_to_origin(0, 0, hpPercent, 4, 75, 559, hpPercent * 2.5, 10)
+    charImage.clip_draw(0, 15, 12, 15, 36, 540, 30, 37)
+
+    if warrior.lvl == 1:
+        font.clip_draw(116, 0, 6, 16, 69, 505)
+    elif warrior.lvl == 0:
+        font.clip_draw(110 + (warrior.lvl * 9), 0, 9, 16, 69, 505)
+    else:
+        font.clip_draw(105 + (warrior.lvl * 9), 0, 9, 16, 69, 505)
+
     update_canvas()
 
 

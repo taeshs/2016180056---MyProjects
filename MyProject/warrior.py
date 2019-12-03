@@ -225,6 +225,7 @@ next_state_table = {  # 999 -> IGNORE EVENT
 class Warrior:
 
     def __init__(self):
+        self.lvl = 4
         self.maxHp = 50
         self.hp = 50
         self.hpPercent = 1
@@ -265,6 +266,8 @@ class Warrior:
                 self.cur_state.exit(self, event)
                 self.cur_state = next_state_table[self.cur_state][event]
                 self.cur_state.enter(self, event)
+        if self.isDead:
+            self.dead()
 
     def draw(self):
         self.cur_state.draw(self)

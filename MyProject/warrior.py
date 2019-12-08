@@ -217,7 +217,8 @@ next_state_table = {  # 999 -> IGNORE EVENT
                   UP_KEYUP: 999, DOWN_KEYUP: 999,
                   RIGHT_KEYDOWN: 999, LEFT_KEYDOWN: 999,
                   UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
-                  STOP_MOVING: 999, ATK_END: IdleState
+                  STOP_MOVING: 999, ATK_END: IdleState,
+ATK_UP: AttackState, ATK_DOWN: AttackState, ATK_RIGHT: AttackState, ATK_LEFT: AttackState,
                   }
 }
 
@@ -258,6 +259,9 @@ class Warrior:
         self.event_que.insert(0, event)
 
     def update(self):
+        if self.hp > self.maxHp:
+            self.hp = self.maxHp
+
         self.hpPercent = self.hp / self.maxHp
         self.cur_state.do(self)
         if len(self.event_que) > 0:

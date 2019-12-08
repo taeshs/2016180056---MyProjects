@@ -4,11 +4,12 @@ import os
 
 from pico2d import *
 
+import random
 import game_world
 import game_framework
 import title_state
 from warrior import Warrior
-from map import Map
+import map
 from monster import Monster
 from item import Item
 
@@ -16,9 +17,9 @@ name = "MainState"
 
 TILE_SIZE = 32
 
-map = None
+maps = None
 warrior = None
-monster = None
+monsters = None
 font = None
 UI = None
 HP_BAR = None
@@ -26,7 +27,7 @@ hpPercent = None
 once = None
 charImage = None
 font = None
-
+items = None
 
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
@@ -50,21 +51,33 @@ def enter():
     global font
     font = load_image('font2x.png')
 
-    global warrior
-    global map
-    global monster
+    global maps
+    maps = map.Map()
+    game_world.add_object(maps, 0)
+
+    global monsters
+
+    monsters = []
+    # monster = Monster(176, 240)
+    # monster2 = Monster(240, 240)  # spawn in 240, 240
+    n = 0
+    while n < 10:
+        lk = random.randint(1, map.tilecnt)
+        mx = lk // (map.windsizX // map.fixsize)
+        my = (lk % (map.windsizX // map.fixsize))
+        if map.MapLi[mx][my] == 2:
+            n += 1
+            monsters.append(Monster(int((map.fixsize / 2) + map.fixsize * mx), int((map.fixsize / 2) + map.fixsize * my)))
+    game_world.add_objects(monsters, 1)
+
     global items
-    monster = Monster(176, 240)
-    monster2 = Monster(240, 240)  # spawn in 240, 240
-
-    items = [Item(240, 272)]
+    items = []
     game_world.add_objects(items, 1)
-    # Item() for i in range(3)
 
-    game_world.add_object(monster, 1)
-    game_world.add_object(monster2, 1)
-    map = Map()
-    game_world.add_object(map, 0)
+    # game_world.add_object(monster, 1)
+    # game_world.add_object(monster2, 1)
+
+    global warrior
     warrior = Warrior()
     game_world.add_object(warrior, 1)
 
@@ -141,9 +154,13 @@ def draw():
 
 
 def make_item(x, y):
-    this_item = Item(x, y)
-    items.append(this_item)
-    game_world.add_object(this_item, 1)
+    luck = random.randint(1, 10)
+    if luck > 5:
+        this_item = Item(x, y)
+        items.append(this_item)
+        game_world.add_object(this_item, 1)
+    else:
+        print("bad luck!")
 
 
 class Once:

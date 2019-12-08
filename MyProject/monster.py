@@ -155,6 +155,7 @@ class Monster:
         if self.state == 1:
             self.deadTimer += 1
             if self.deadTimer == 96:
+                main_state.make_item(self.x, self.y)
                 game_world.remove_object(self)
 
     def draw(self):

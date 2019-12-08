@@ -53,12 +53,12 @@ def enter():
     global warrior
     global map
     global monster
-    global item
+    global items
     monster = Monster(176, 240)
     monster2 = Monster(240, 240)  # spawn in 240, 240
 
-    item = []
-
+    items = [Item(240, 272)]
+    game_world.add_objects(items, 1)
     # Item() for i in range(3)
 
     game_world.add_object(monster, 1)
@@ -67,6 +67,7 @@ def enter():
     game_world.add_object(map, 0)
     warrior = Warrior()
     game_world.add_object(warrior, 1)
+
     global once
     once = Once()
 
@@ -99,19 +100,17 @@ def update():
     for game_objects in game_world.all_objects():
         game_objects.update()
 
-    for items in item:
-        if collide(items, warrior):
+    for item in items:
+        if collide(item, warrior):
             print("collide")
-            game_world.remove_object(items)
-            item.remove(items)
+            game_world.remove_object(item)
+            items.remove(item)
             warrior.hp += 8
 
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
             game_object.isDead = True
             if once.call == 0:
-                item.append(Item(game_object.x, game_object.y))
-                game_world.add_objects(item, 1)
                 once.print(game_object.type)
                 once.call = 1
 
@@ -139,6 +138,12 @@ def draw():
         font.clip_draw(105 + (warrior.lvl * 9), 0, 9, 16, 69, 505)
 
     update_canvas()
+
+
+def make_item(x, y):
+    this_item = Item(x, y)
+    items.append(this_item)
+    game_world.add_object(this_item, 1)
 
 
 class Once:

@@ -271,6 +271,7 @@ class Warrior:
 
     def draw(self):
         self.cur_state.draw(self)
+        draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -283,4 +284,7 @@ class Warrior:
 
     def dead(self):
         game_framework.change_state(title_state)        # dying animation , change_state( push_state ? ) to game_over.py
+
+    def get_bb(self):
+        return self.x - 13, self.y - 13, self.x + 13, self.y + 13
 

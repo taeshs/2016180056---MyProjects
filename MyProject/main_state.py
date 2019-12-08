@@ -10,6 +10,7 @@ import title_state
 from warrior import Warrior
 from map import Map
 from monster import Monster
+from item import Item
 
 name = "MainState"
 
@@ -26,6 +27,19 @@ once = None
 charImage = None
 font = None
 
+
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    return True
+
+
 def enter():
     global UI
     global HP_BAR
@@ -39,8 +53,14 @@ def enter():
     global warrior
     global map
     global monster
+    global item
     monster = Monster(176, 240)
     monster2 = Monster(240, 240)  # spawn in 240, 240
+
+    item = []
+
+    # Item() for i in range(3)
+
     game_world.add_object(monster, 1)
     game_world.add_object(monster2, 1)
     map = Map()
@@ -79,10 +99,19 @@ def update():
     for game_objects in game_world.all_objects():
         game_objects.update()
 
+    for items in item:
+        if collide(items, warrior):
+            print("collide")
+            game_world.remove_object(items)
+            item.remove(items)
+            warrior.hp += 8
+
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
             game_object.isDead = True
             if once.call == 0:
+                item.append(Item(game_object.x, game_object.y))
+                game_world.add_objects(item, 1)
                 once.print(game_object.type)
                 once.call = 1
 

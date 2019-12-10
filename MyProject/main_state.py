@@ -85,7 +85,8 @@ def enter():
 
     maps.set_center_object(warrior)
     warrior.set_background(maps)
-
+    for monster in monsters:
+        monster.set_background(maps)
 
 def exit():
     game_world.clear()

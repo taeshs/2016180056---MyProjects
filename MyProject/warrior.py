@@ -5,6 +5,7 @@ import title_state
 import game_framework
 import game_world
 
+canvasTileSizeX, canvasTileSizeY = map.canvasTileSizeX, map.canvasTileSizeY
 # Boy Event
 UP_KEYDOWN, DOWN_KEYDOWN, RIGHT_KEYDOWN, LEFT_KEYDOWN, \
 UP_KEYUP, DOWN_KEYUP, RIGHT_KEYUP, LEFT_KEYUP, STOP_MOVING, \
@@ -45,6 +46,7 @@ class IdleState:
 
     @staticmethod
     def do(warrior):
+
         warrior.timer = (warrior.timer + 1) % 1000
         if warrior.timer > 800:
             warrior.idl = 1
@@ -53,7 +55,7 @@ class IdleState:
 
     @staticmethod
     def draw(warrior):
-        warrior.image.clip_draw(warrior.idl * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+        warrior.image.clip_draw(warrior.idl * 12, warrior.dir * 15, 12, 15, warrior.cx, warrior.cy, 24, 30)
         # character.clip_draw(poz, pos, 12, 15, x, y, 36, 45)
 
 
@@ -155,7 +157,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
             print("attack")
             warrior.atkSt = 0
         else:
-            warrior.image.clip_draw(int(warrior.frame) * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+            warrior.image.clip_draw(int(warrior.frame) * 12, warrior.dir * 15, 12, 15, warrior.cx, warrior.cy, 24, 30)
 
 
 class AttackState:
@@ -195,7 +197,7 @@ class AttackState:
 
     @staticmethod
     def draw(warrior):  # 13, 14, 15
-        warrior.image.clip_draw((warrior.idl + 13) * 12, warrior.dir * 15, 12, 15, warrior.x, warrior.y, 24, 30)
+        warrior.image.clip_draw((warrior.idl + 13) * 12, warrior.dir * 15, 12, 15, warrior.cx, warrior.cy, 24, 30)
 
 
 next_state_table = {  # 999 -> IGNORE EVENT
@@ -247,6 +249,7 @@ class Warrior:
         self.atkSt = 0
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.xCV, self.yCV = 0, 0
 
     def change_state(self, state):
         if len(self.event_que) > 0:
@@ -259,6 +262,11 @@ class Warrior:
         self.event_que.insert(0, event)
 
     def update(self):
+
+        self.x = clamp(0, self.x, self.bg.w * 32)
+        self.y = clamp(0, self.y, self.bg.h * 32)
+        self.cx, self.cy = self.x - (self.bg.window_left * 32), self.y - (self.bg.window_bottom * 32)
+
         if self.hp > self.maxHp:
             self.hp = self.maxHp
 
@@ -290,8 +298,11 @@ class Warrior:
         game_framework.change_state(title_state)        # dying animation , change_state( push_state ? ) to game_over.py
 
     def get_bb(self):
-        return self.x - 13, self.y - 13, self.x + 13, self.y + 13
+        return self.cx - 13, self.cy - 13, self.cx + 13, self.cy + 13
 
     def set_background(self, maps):
         self.bg = maps
 
+    def get_correction_value(self, tx, ty):
+        self.xCV = tx * 32
+        self.yCV = ty * 32

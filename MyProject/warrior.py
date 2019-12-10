@@ -292,3 +292,6 @@ class Warrior:
     def get_bb(self):
         return self.x - 13, self.y - 13, self.x + 13, self.y + 13
 
+    def set_background(self, maps):
+        self.bg = maps
+

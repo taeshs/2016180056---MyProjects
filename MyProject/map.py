@@ -1,10 +1,13 @@
 from pico2d import *
 
-windsizX = 320
-windsizY = 576
 nomsize = 16
 fixsize = 32
-tilecnt = windsizX // fixsize * windsizY // fixsize
+windsizX = 320
+windsizY = 576
+canvasTileSizeX, canvasTileSizeY = windsizX // fixsize, windsizY // fixsize
+tileX, tileY = 10, 24
+tilecnt = tileX * tileY
+# windsizX // fixsize * windsizY // fixsize
 
 # 상하반전
 MapLi = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -21,10 +24,14 @@ MapLi = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
          [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
          [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
          [0, 1, 2, 2, 2, 2, 2, 2, 1, 0],
-         [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 1, 1, 1, 1, 1, 2, 1, 1, 0],
+         [0, 0, 0, 0, 0, 1, 2, 1, 0, 0],
+         [0, 0, 1, 1, 1, 1, 2, 1, 1, 0],
+         [0, 0, 1, 2, 2, 2, 2, 2, 1, 0],
+         [0, 0, 1, 2, 2, 2, 2, 2, 1, 0],
+         [0, 0, 1, 2, 2, 2, 2, 2, 1, 0],
+         [0, 0, 1, 2, 2, 2, 2, 2, 1, 0],
+         [0, 0, 1, 1, 1, 1, 1, 1, 1, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
@@ -34,26 +41,41 @@ MapLi = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
 class Map:
     def __init__(self):
         self.image = load_image('tiles0.png')
+        self.w, self.h = tileX, tileY
         self.hp = 99999
         self.type = 'map'
 
     def update(self):
-        pass
+        self.window_left = clamp(0,
+                                 int(self.center_object.tileX) - tileX // 2,
+                                 self.w - canvasTileSizeX)
+        self.window_bottom = clamp(0,
+                                   int(self.center_object.tileY) - tileY // 2,
+                                   self.h - canvasTileSizeY)
 
     def draw(self):
+
         for n in range(tilecnt):
-            if MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 0:  # 벽 땅 공허 조건으로 바꾸자.
-                self.image.clip_draw(0, 48, nomsize, nomsize,
-                                     (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
-                                     (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
-                                     fixsize, fixsize)
-            elif MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 1:
-                self.image.clip_draw(0, 32, nomsize, nomsize,
-                                     (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
-                                     (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
-                                     fixsize, fixsize)
-            elif MapLi[n // (windsizX // fixsize)][(n % (windsizX // fixsize))] == 2:
-                self.image.clip_draw(16, 16, nomsize, nomsize,
-                                     (fixsize / 2) + fixsize * (n % (windsizX / fixsize)),
-                                     (fixsize / 2) + fixsize * (n // (windsizX / fixsize)),
-                                     fixsize, fixsize)
+            x, y = n % tileX, n // tileX
+            if self.window_left + canvasTileSizeX > x >= self.window_left and \
+                    self.window_bottom + canvasTileSizeY > y >= self.window_bottom:
+                if MapLi[y][x] == 0:  # 벽 땅 공허 조건으로 바꾸자.
+                    self.image.clip_draw_to_origin(0, 48, nomsize, nomsize,
+                                                   fixsize * (x - self.window_left),
+                                                   fixsize * (y - self.window_bottom),
+                                                   fixsize, fixsize)
+                elif MapLi[y][x] == 1:
+                    self.image.clip_draw_to_origin(0, 32, nomsize, nomsize,
+                                                   fixsize * (x - self.window_left),
+                                                   fixsize * (y - self.window_bottom),
+                                                   fixsize, fixsize)
+                elif MapLi[y][x] == 2:
+                    self.image.clip_draw_to_origin(16, 16, nomsize, nomsize,
+                                                   fixsize * (x - self.window_left),
+                                                   fixsize * (y - self.window_bottom),
+                                                   fixsize, fixsize)
+
+    # self.image.clip_draw_to_origin(self.window_left, self.window_bottom,self.canvas_width, self.canvas_height,0, 0)
+
+    def set_center_object(self, warrior):
+        self.center_object = warrior

@@ -61,13 +61,12 @@ def enter():
     # monster = Monster(176, 240)
     # monster2 = Monster(240, 240)  # spawn in 240, 240
     n = 0
-    while n < 10:
-        lk = random.randint(1, map.tilecnt)
-        mx = lk // (map.windsizX // map.fixsize)
-        my = (lk % (map.windsizX // map.fixsize))
-        if map.MapLi[mx][my] == 2:
+    while n < 2:
+        mx = random.randint(0, 9)
+        my = random.randint(0, 19)
+        if map.MapLi[my][mx] == 2:
             n += 1
-            monsters.append(Monster(int((map.fixsize / 2) + map.fixsize * mx), int((map.fixsize / 2) + map.fixsize * my)))
+            monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
     game_world.add_objects(monsters, 1)
 
     global items
@@ -83,6 +82,9 @@ def enter():
 
     global once
     once = Once()
+
+    maps.set_center_object(warrior)
+    warrior.set_background(maps)
 
 
 def exit():

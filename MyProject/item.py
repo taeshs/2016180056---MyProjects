@@ -14,11 +14,14 @@ class Item:
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
 
     def update(self):
-        pass
+        self.cx, self.cy = self.x - (self.bg.window_left * 32), self.y - (self.bg.window_bottom * 32)
 
     def draw(self):
-        self.image.clip_draw(16, 16, 16, 16, self.x, self.y, 32, 32)
+        self.image.clip_draw(16, 16, 16, 16, self.cx, self.cy, 32, 32)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 15, self.y - 15, self.x + 15, self.y + 15
+        return self.cx - 15, self.cy - 15, self.cx + 15, self.cy + 15
+
+    def set_background(self, maps):
+        self.bg = maps

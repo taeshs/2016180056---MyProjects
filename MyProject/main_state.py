@@ -158,8 +158,9 @@ def draw():
 
 def make_item(x, y):
     luck = random.randint(1, 10)
-    if luck > 5:
+    if luck > 4:
         this_item = Item(x, y)
+        this_item.set_background(maps)
         items.append(this_item)
         game_world.add_object(this_item, 1)
     else:

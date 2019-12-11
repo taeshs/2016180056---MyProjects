@@ -20,7 +20,7 @@ class FloorTrigger:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.cx - 15, self.cy - 15, self.cx + 15, self.cy + 15
+        return self.cx - 5, self.cy - 5, self.cx + 5, self.cy + 5
 
     def set_background(self, maps):
         self.bg = maps

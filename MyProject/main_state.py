@@ -56,7 +56,7 @@ def enter():
     font = load_image('font2x.png')
 
     global maps
-    maps = map.Map()
+    maps = map.Map(1)
     game_world.add_object(maps, 0)
     global floorTriggers
     floorTriggers = floorTrigger.FloorTrigger(18*32, 6*32)
@@ -64,7 +64,6 @@ def enter():
     game_world.add_object(floorTriggers, 1)
 
     global monsters
-
     monsters = []
     # monster = Monster(176, 240)
     # monster2 = Monster(240, 240)  # spawn in 240, 240
@@ -72,7 +71,7 @@ def enter():
     while n < 1:
         mx = random.randint(0, map.tileX - 1)
         my = random.randint(0,  map.tileY - 1)
-        if map.MapLi[my][mx] == 2:
+        if map.map1[my][mx] == 2:
             n += 1
             monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
     game_world.add_objects(monsters, 1)
@@ -124,15 +123,32 @@ def update():
     for game_objects in game_world.all_objects():
         game_objects.update()
 
-    if collide(floorTrigger, warrior):
-        print('go to next stage')
+    global floorTriggers
+    if floorTriggers is not None:
+        if collide(floorTriggers, warrior):
+            print('go to next stage')
+            global maps
+            global items
+            global monsters
+            warrior.x, warrior.y = TILE_SIZE * 2, 16 + TILE_SIZE * 12
+            game_world.remove_object(maps)
+            maps = map.Map(2)
+            game_world.add_object(maps, 0)
+            maps.set_center_object(warrior)
+            warrior.set_background(maps)
+            for item in items:
+                game_world.remove_object(item)
+            for monster in monsters:
+                game_world.remove_object(monster)
+            game_world.remove_object(floorTriggers)
 
-    for item in items:
-        if collide(item, warrior):
-            print("collide")
-            game_world.remove_object(item)
-            items.remove(item)
-            warrior.hp += 8
+    if items is not None:
+        for item in items:
+            if collide(item, warrior):
+                print("collide")
+                game_world.remove_object(item)
+                items.remove(item)
+                warrior.hp += 8
 
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:

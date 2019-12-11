@@ -37,7 +37,7 @@ class IdleState:
         print("idlestate")
 
         print("warrior : ", (warrior.y - 16) // TILE_SIZE, (warrior.x - 16) // TILE_SIZE,
-              map.MapLi[warrior.tileY][warrior.tileX])
+              warrior.bg.mapli[warrior.tileY][warrior.tileX])
         warrior.timer = 0
 
     @staticmethod
@@ -74,7 +74,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_RIGHT)
-                if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX + 1] == 2:
+                if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
                     warrior.cnt = 0
             elif event == LEFT_KEYDOWN:
@@ -87,7 +87,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_LEFT)
-                if warrior.atkSt != 1 and map.MapLi[warrior.tileY][warrior.tileX - 1] == 2:
+                if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY][warrior.tileX - 1] == 2:
                     warrior.moveto = 'LEFT'
                     warrior.cnt = 0
             elif event == UP_KEYDOWN:
@@ -99,7 +99,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_UP)
-                if warrior.atkSt != 1 and map.MapLi[warrior.tileY + 1][warrior.tileX] == 2:
+                if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY + 1][warrior.tileX] == 2:
                     warrior.moveto = 'UP'
                     warrior.cnt = 0
             elif event == DOWN_KEYDOWN:
@@ -111,7 +111,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                             warrior.atkSt = 1
                             game_object.get_damage(warrior.atkDamage)
                             warrior.add_event(ATK_DOWN)
-                if warrior.atkSt != 1 and map.MapLi[warrior.tileY - 1][warrior.tileX] == 2:
+                if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'
                     warrior.cnt = 0
 
@@ -228,7 +228,8 @@ ATK_UP: AttackState, ATK_DOWN: AttackState, ATK_RIGHT: AttackState, ATK_LEFT: At
 class Warrior:
 
     def __init__(self):
-        self.lvl = 4
+        self.bg = main_state.maps
+        self.lvl = 1
         self.maxHp = 50
         self.hp = 50
         self.hpPercent = 1

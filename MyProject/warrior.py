@@ -1,6 +1,7 @@
 from pico2d import *
 import map
 import main_state
+import game_over
 import title_state
 import game_framework
 import game_world
@@ -129,6 +130,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                     warrior.cnt = 32
             elif event == SKIP_DOWN:
                 warrior.add_event(STOP_MOVING)
+                warrior.cnt = 32
 
 
     @staticmethod
@@ -245,6 +247,7 @@ class Warrior:
 
     def __init__(self):
         self.bg = main_state.maps
+        self.score = 0
         self.lvl = 1
         self.exp = 0
         self.maxHp = 50
@@ -313,7 +316,7 @@ class Warrior:
         print("warrior's HP: ", self.hp)
 
     def dead(self):
-        game_framework.change_state(title_state)  # dying animation , change_state( push_state ? ) to status_pause.py
+        game_framework.push_state(game_over)  # dying animation , change_state( push_state ? ) to status_pause.py
 
     def get_bb(self):
         return self.cx - 13, self.cy - 13, self.cx + 13, self.cy + 13

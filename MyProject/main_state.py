@@ -217,6 +217,7 @@ def make_item(x, y):
 
 def lvl_up():
     warrior.exp += 1
+    warrior.score += 5
     if warrior.exp == warrior.lvl:
         warrior.lvl += 1
         warrior.maxHp += 10

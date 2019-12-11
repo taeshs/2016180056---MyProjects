@@ -11,7 +11,9 @@ image = None
 def enter():
     global image
     global font
+    global skull
     image = load_image('chrome.png')
+    skull = load_image('warriorLR.png')
     font = load_font('fonts.ttf')
 
 
@@ -28,8 +30,7 @@ def handle_events():
         else:
             if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.change_state(title_state)
-            elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
-                game_framework.pop_state()
+
 
 
 def draw():
@@ -37,9 +38,10 @@ def draw():
     for game_objects in game_world.all_objects():
         game_objects.draw()
     image.clip_draw_to_origin(30, 0, 34, 32, 0, 150, 300, 300)
-    font.draw(80, 350, 'HP : %3d' % main_state.warrior.hp, (0, 0, 0))
-    font.draw(80, 330, 'MAXHP : %3d' % main_state.warrior.maxHp, (0, 0, 0))
-    font.draw(80, 310, 'DAMAGE : %3d' % main_state.warrior.atkDamage, (0, 0, 0))
+    skull.clip_draw_to_origin(96, 15, 60, 15, 90, 330, 150, 37)
+    font.draw(80, 405, 'YOU ARE DEAD!', (0, 0, 0))
+    font.draw(80, 310, 'Level : %3d' % main_state.warrior.lvl, (0, 0, 0))
+    font.draw(80, 290, 'SCORE : %3d' % main_state.warrior.score, (0, 0, 0))
     update_canvas()
     delay(0.01)
 

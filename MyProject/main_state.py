@@ -14,6 +14,7 @@ import status_pause
 from warrior import Warrior
 import map
 from monster import Monster
+from boss import BossMonster
 from item import Item
 from floorTrigger import FloorTrigger
 
@@ -143,6 +144,9 @@ def update():
             game_world.add_object(maps, 0)
             maps.set_center_object(warrior)
             warrior.set_background(maps)
+            boss = BossMonster(TILE_SIZE * 14, 16 + TILE_SIZE * 12)
+            boss.set_background(maps)
+            game_world.add_object(boss, 0)
             for item in items:
                 game_world.remove_object(item)
             for monster in monsters:

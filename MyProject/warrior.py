@@ -254,7 +254,7 @@ class Warrior:
         self.hp = 50
         self.hpPercent = 1
         self.atkDamage = 8
-        self.x, self.y = 16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3
+        self.x, self.y = 16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6 #16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.image = load_image('warriorLR.png')
         self.dir = 1  # 1 = R , 0 = L

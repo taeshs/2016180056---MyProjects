@@ -9,7 +9,7 @@ canvasTileSizeX, canvasTileSizeY = map.canvasTileSizeX, map.canvasTileSizeY
 # Boy Event
 UP_KEYDOWN, DOWN_KEYDOWN, RIGHT_KEYDOWN, LEFT_KEYDOWN, \
 UP_KEYUP, DOWN_KEYUP, RIGHT_KEYUP, LEFT_KEYUP, STOP_MOVING, \
-ATK_UP, ATK_DOWN, ATK_RIGHT, ATK_LEFT, ATK_END = range(14)
+ATK_UP, ATK_DOWN, ATK_RIGHT, ATK_LEFT, ATK_END, SKIP_DOWN, SKIP_UP = range(16)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_UP): UP_KEYDOWN,
@@ -19,7 +19,9 @@ key_event_table = {
     (SDL_KEYUP, SDLK_UP): UP_KEYUP,
     (SDL_KEYUP, SDLK_DOWN): DOWN_KEYUP,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_KEYUP,
-    (SDL_KEYUP, SDLK_LEFT): LEFT_KEYUP
+    (SDL_KEYUP, SDLK_LEFT): LEFT_KEYUP,
+    (SDL_KEYDOWN, SDLK_k): SKIP_DOWN,
+    (SDL_KEYUP, SDLK_k): SKIP_UP
 }
 
 TILE_SIZE = 32
@@ -62,6 +64,9 @@ class IdleState:
 class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그쪽 방향키 누를시 move 대신 attack
     @staticmethod
     def enter(warrior, event):
+        for game_object in game_world.all_objects():
+            if game_object.type == 'mon':
+                game_object.turn = 0
         if warrior.moving == 0:
             print("runstate")
             if event == RIGHT_KEYDOWN:
@@ -114,7 +119,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'
                     warrior.cnt = 0
-
+            elif event == SKIP_DOWN:
+                warrior.add_event(STOP_MOVING)
 
     @staticmethod
     def exit(warrior, event):
@@ -165,14 +171,13 @@ class AttackState:
     def enter(warrior, event):
         warrior.timer = 0
         warrior.frame = 0
-        #if event == ATK_UP:
+        # if event == ATK_UP:
 
-        #if event == ATK_DOWN:
+        # if event == ATK_DOWN:
 
-        #if event == ATK_RIGHT:
+        # if event == ATK_RIGHT:
 
-        #if event == ATK_LEFT:
-
+        # if event == ATK_LEFT:
 
     @staticmethod
     def exit(warrior, event):
@@ -203,6 +208,7 @@ class AttackState:
 next_state_table = {  # 999 -> IGNORE EVENT
     IdleState: {RIGHT_KEYDOWN: MoveState, LEFT_KEYDOWN: MoveState,
                 UP_KEYDOWN: MoveState, DOWN_KEYDOWN: MoveState,
+                SKIP_UP: 999, SKIP_DOWN: MoveState,
                 RIGHT_KEYUP: 999, LEFT_KEYUP: 999,
                 UP_KEYUP: 999, DOWN_KEYUP: 999,
                 STOP_MOVING: 999, ATK_END: 999
@@ -213,14 +219,15 @@ next_state_table = {  # 999 -> IGNORE EVENT
                 UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
                 STOP_MOVING: IdleState,
                 ATK_UP: AttackState, ATK_DOWN: AttackState, ATK_RIGHT: AttackState, ATK_LEFT: AttackState,
-                ATK_END: 999
+                ATK_END: 999, SKIP_UP: 999, SKIP_DOWN: 999
                 },
     AttackState: {RIGHT_KEYUP: 999, LEFT_KEYUP: 999,
                   UP_KEYUP: 999, DOWN_KEYUP: 999,
                   RIGHT_KEYDOWN: 999, LEFT_KEYDOWN: 999,
                   UP_KEYDOWN: 999, DOWN_KEYDOWN: 999,
                   STOP_MOVING: 999, ATK_END: IdleState,
-ATK_UP: AttackState, ATK_DOWN: AttackState, ATK_RIGHT: AttackState, ATK_LEFT: AttackState,
+                  ATK_UP: AttackState, ATK_DOWN: AttackState, ATK_RIGHT: AttackState, ATK_LEFT: AttackState,
+                  SKIP_UP: 999, SKIP_DOWN: 999
                   }
 }
 
@@ -230,6 +237,7 @@ class Warrior:
     def __init__(self):
         self.bg = main_state.maps
         self.lvl = 1
+        self.exp = 0
         self.maxHp = 50
         self.hp = 50
         self.hpPercent = 1
@@ -296,7 +304,7 @@ class Warrior:
         print("warrior's HP: ", self.hp)
 
     def dead(self):
-        game_framework.change_state(title_state)        # dying animation , change_state( push_state ? ) to game_over.py
+        game_framework.change_state(title_state)  # dying animation , change_state( push_state ? ) to game_over.py
 
     def get_bb(self):
         return self.cx - 13, self.cy - 13, self.cx + 13, self.cy + 13
@@ -304,6 +312,6 @@ class Warrior:
     def set_background(self, maps):
         self.bg = maps
 
-    def get_correction_value(self, tx, ty): #?
+    def get_correction_value(self, tx, ty):  # ?
         self.xCV = tx * 32
         self.yCV = ty * 32

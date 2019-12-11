@@ -33,6 +33,7 @@ font = None
 items = None
 floorTriggers = None
 
+
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
@@ -43,6 +44,8 @@ def collide(a, b):
     if bottom_a > top_b: return False
 
     return True
+
+
 # 6, 18
 
 def enter():
@@ -59,7 +62,7 @@ def enter():
     maps = map.Map(1)
     game_world.add_object(maps, 0)
     global floorTriggers
-    floorTriggers = floorTrigger.FloorTrigger(18*32, 6*32)
+    floorTriggers = floorTrigger.FloorTrigger(18 * 32, 6 * 32)
     floorTriggers.set_background(maps)
     game_world.add_object(floorTriggers, 1)
 
@@ -68,9 +71,9 @@ def enter():
     # monster = Monster(176, 240)
     # monster2 = Monster(240, 240)  # spawn in 240, 240
     n = 0
-    while n < 1:
+    while n < 10:
         mx = random.randint(0, map.tileX - 1)
-        my = random.randint(0,  map.tileY - 1)
+        my = random.randint(0, map.tileY - 1)
         if map.map1[my][mx] == 2:
             n += 1
             monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
@@ -94,6 +97,7 @@ def enter():
     warrior.set_background(maps)
     for monster in monsters:
         monster.set_background(maps)
+
 
 def exit():
     game_world.clear()
@@ -148,7 +152,13 @@ def update():
                 print("collide")
                 game_world.remove_object(item)
                 items.remove(item)
-                warrior.hp += 8
+                if item.var == 1:
+                    warrior.hp += 10
+                elif item.var == 2:
+                    warrior.atkDamage += 5
+                elif item.var == 3:
+                    warrior.maxHp += 10
+                    warrior.hp += 5
 
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
@@ -174,9 +184,7 @@ def draw():
     charImage.clip_draw(0, 15, 12, 15, 36, 540, 30, 37)
 
     if warrior.lvl == 1:
-        font.clip_draw(116, 0, 6, 16, 69, 505)
-    elif warrior.lvl == 0:
-        font.clip_draw(110 + (warrior.lvl * 9), 0, 9, 16, 69, 505)
+        font.clip_draw(117, 0, 6, 16, 69, 505)
     else:
         font.clip_draw(105 + (warrior.lvl * 9), 0, 9, 16, 69, 505)
 
@@ -184,14 +192,33 @@ def draw():
 
 
 def make_item(x, y):
-    luck = random.randint(1, 10)
-    if luck > 4:
-        this_item = Item(x, y)
+    luck = random.randint(1, 15)
+    if luck > 11:
+        this_item = Item(x, y, 1)
+        this_item.set_background(maps)
+        items.append(this_item)
+        game_world.add_object(this_item, 1)
+    elif luck == 1 or luck == 2:
+        this_item = Item(x, y, 2)
+        this_item.set_background(maps)
+        items.append(this_item)
+        game_world.add_object(this_item, 1)
+    elif luck == 5 or luck == 6:
+        this_item = Item(x, y, 3)
         this_item.set_background(maps)
         items.append(this_item)
         game_world.add_object(this_item, 1)
     else:
         print("bad luck!")
+
+
+def lvl_up():
+    warrior.exp += 1
+    if warrior.exp == warrior.lvl:
+        warrior.lvl += 1
+        warrior.maxHp += 10
+        warrior.hp += 10
+        warrior.exp = 0
 
 
 class Once:

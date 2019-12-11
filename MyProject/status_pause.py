@@ -41,7 +41,6 @@ def draw():
     font.draw(80, 330, 'MAXHP : %3d' % main_state.warrior.maxHp, (0, 0, 0))
     font.draw(80, 310, 'DAMAGE : %3d' % main_state.warrior.atkDamage, (0, 0, 0))
     update_canvas()
-    delay(0.01)
 
 
 def update():

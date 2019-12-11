@@ -42,8 +42,8 @@ def draw():
     font.draw(80, 405, 'YOU ARE DEAD!', (0, 0, 0))
     font.draw(80, 310, 'Level : %3d' % main_state.warrior.lvl, (0, 0, 0))
     font.draw(80, 290, 'SCORE : %3d' % main_state.warrior.score, (0, 0, 0))
+    font.draw(75, 250, '    ESC TO TITLE', (0, 0, 0))
     update_canvas()
-    delay(0.01)
 
 
 def update():

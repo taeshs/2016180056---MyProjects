@@ -82,6 +82,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY][warrior.tileX + 1] == 2:
                     warrior.moveto = 'RIGHT'
                     warrior.cnt = 0
+                else:
+                    warrior.cnt = 32
             elif event == LEFT_KEYDOWN:
                 warrior.dir = 0
                 for game_object in game_world.all_objects():
@@ -95,6 +97,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY][warrior.tileX - 1] == 2:
                     warrior.moveto = 'LEFT'
                     warrior.cnt = 0
+                else:
+                    warrior.cnt = 32
             elif event == UP_KEYDOWN:
                 for game_object in game_world.all_objects():
                     if game_object.type == 'mon':
@@ -107,6 +111,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY + 1][warrior.tileX] == 2:
                     warrior.moveto = 'UP'
                     warrior.cnt = 0
+                else:
+                    warrior.cnt = 32
             elif event == DOWN_KEYDOWN:
                 for game_object in game_world.all_objects():
                     if game_object.type == 'mon':
@@ -119,8 +125,11 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
                 if warrior.atkSt != 1 and warrior.bg.mapli[warrior.tileY - 1][warrior.tileX] == 2:
                     warrior.moveto = 'DOWN'
                     warrior.cnt = 0
+                else:
+                    warrior.cnt = 32
             elif event == SKIP_DOWN:
                 warrior.add_event(STOP_MOVING)
+
 
     @staticmethod
     def exit(warrior, event):
@@ -128,6 +137,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
 
     @staticmethod
     def do(warrior):
+        print('moving....')
         if warrior.cnt < TILE_SIZE:
             if warrior.moveto == 'RIGHT':
                 warrior.x += 1
@@ -242,7 +252,7 @@ class Warrior:
         self.hp = 50
         self.hpPercent = 1
         self.atkDamage = 8
-        self.x, self.y = 16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6
+        self.x, self.y = 16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.image = load_image('warriorLR.png')
         self.dir = 1  # 1 = R , 0 = L

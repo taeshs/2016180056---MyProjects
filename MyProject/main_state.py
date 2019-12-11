@@ -10,6 +10,7 @@ import floorTrigger
 import game_world
 import game_framework
 import title_state
+import status_pause
 from warrior import Warrior
 import map
 from monster import Monster
@@ -119,6 +120,8 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.change_state(title_state)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
+            game_framework.push_state(status_pause)
         else:
             warrior.handle_event(event)
 

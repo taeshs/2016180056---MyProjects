@@ -137,7 +137,6 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
 
     @staticmethod
     def do(warrior):
-        print('moving....')
         if warrior.cnt < TILE_SIZE:
             if warrior.moveto == 'RIGHT':
                 warrior.x += 1
@@ -314,7 +313,7 @@ class Warrior:
         print("warrior's HP: ", self.hp)
 
     def dead(self):
-        game_framework.change_state(title_state)  # dying animation , change_state( push_state ? ) to game_over.py
+        game_framework.change_state(title_state)  # dying animation , change_state( push_state ? ) to status_pause.py
 
     def get_bb(self):
         return self.cx - 13, self.cy - 13, self.cx + 13, self.cy + 13

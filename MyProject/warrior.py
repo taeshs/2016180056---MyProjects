@@ -35,7 +35,7 @@ class IdleState:
     @staticmethod
     def enter(warrior, event):
         print("idlestate")
-        warrior.tileX, warrior.tileY = (warrior.x - 16) // TILE_SIZE, (warrior.y - 16) // TILE_SIZE
+
         print("warrior : ", (warrior.y - 16) // TILE_SIZE, (warrior.x - 16) // TILE_SIZE,
               map.MapLi[warrior.tileY][warrior.tileX])
         warrior.timer = 0
@@ -233,7 +233,7 @@ class Warrior:
         self.hp = 50
         self.hpPercent = 1
         self.atkDamage = 8
-        self.x, self.y = 16 + TILE_SIZE * 3, 16 + TILE_SIZE * 5
+        self.x, self.y = 16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.image = load_image('warriorLR.png')
         self.dir = 1  # 1 = R , 0 = L
@@ -262,7 +262,7 @@ class Warrior:
         self.event_que.insert(0, event)
 
     def update(self):
-
+        self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.x = clamp(0, self.x, self.bg.w * 32)
         self.y = clamp(0, self.y, self.bg.h * 32)
         self.cx, self.cy = self.x - (self.bg.window_left * 32), self.y - (self.bg.window_bottom * 32)
@@ -303,6 +303,6 @@ class Warrior:
     def set_background(self, maps):
         self.bg = maps
 
-    def get_correction_value(self, tx, ty):
+    def get_correction_value(self, tx, ty): #?
         self.xCV = tx * 32
         self.yCV = ty * 32

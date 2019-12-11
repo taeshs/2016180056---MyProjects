@@ -5,6 +5,8 @@ import os
 from pico2d import *
 
 import random
+
+import floorTrigger
 import game_world
 import game_framework
 import title_state
@@ -12,6 +14,7 @@ from warrior import Warrior
 import map
 from monster import Monster
 from item import Item
+from floorTrigger import FloorTrigger
 
 name = "MainState"
 
@@ -28,6 +31,7 @@ once = None
 charImage = None
 font = None
 items = None
+floorTriggers = None
 
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
@@ -39,7 +43,7 @@ def collide(a, b):
     if bottom_a > top_b: return False
 
     return True
-
+# 6, 18
 
 def enter():
     global UI
@@ -54,6 +58,10 @@ def enter():
     global maps
     maps = map.Map()
     game_world.add_object(maps, 0)
+    global floorTriggers
+    floorTriggers = floorTrigger.FloorTrigger(18*32, 6*32)
+    floorTriggers.set_background(maps)
+    game_world.add_object(floorTriggers, 1)
 
     global monsters
 
@@ -61,9 +69,9 @@ def enter():
     # monster = Monster(176, 240)
     # monster2 = Monster(240, 240)  # spawn in 240, 240
     n = 0
-    while n < 2:
-        mx = random.randint(0, 9)
-        my = random.randint(0, 19)
+    while n < 1:
+        mx = random.randint(0, map.tileX - 1)
+        my = random.randint(0,  map.tileY - 1)
         if map.MapLi[my][mx] == 2:
             n += 1
             monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
@@ -115,6 +123,9 @@ def handle_events():
 def update():
     for game_objects in game_world.all_objects():
         game_objects.update()
+
+    if collide(floorTrigger, warrior):
+        print('go to next stage')
 
     for item in items:
         if collide(item, warrior):

@@ -97,7 +97,7 @@ class Map:
                     self.image.clip_draw_to_origin(16, 16, nomsize, nomsize,
                                                    fixsize * (x - self.window_left),
                                                    fixsize * (y - self.window_bottom),
-                                                   fixsize, fixsize)
+                                                   fixsize, fixsize) #
                 elif self.mapli[y][x] == 3:
                     self.image.clip_draw_to_origin(48, 16, nomsize, nomsize,
                                                    fixsize * (x - self.window_left),

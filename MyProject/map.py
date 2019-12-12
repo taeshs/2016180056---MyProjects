@@ -65,7 +65,7 @@ map2 = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
 class Map:
     def __init__(self, maplist):
-        self.image = load_image('tiles0.png')
+        self.image = load_image('Images//tiles0.png')
         self.w, self.h = tileX, tileY
         if maplist == 1:
             self.mapli = map1

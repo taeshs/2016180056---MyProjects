@@ -53,12 +53,22 @@ def collide(a, b):
 def enter():
     global UI
     global HP_BAR
-    UI = load_image('status_pane.png')
-    HP_BAR = load_image('hp_bar.png')
+    UI = load_image('Images//status_pane.png')
+    HP_BAR = load_image('Images//hp_bar.png')
     global charImage
-    charImage = load_image('warriorLR.png')
+    charImage = load_image('Images//warriorLR.png')
     global font
-    font = load_image('font2x.png')
+    font = load_image('Images//font2x.png')
+
+    global eatSound
+    eatSound = load_music('Sounds//snd_item.mp3')
+    global lvlUpSound
+    lvlUpSound = load_music('Sounds//snd_levelup.mp3')
+    lvlUpSound.set_volume(64)
+    global bgm
+    bgm = load_wav('Sounds//game.wav')
+    bgm.set_volume(128)
+    bgm.repeat_play()
 
     global maps
     maps = map.Map(1)
@@ -144,7 +154,7 @@ def update():
             game_world.add_object(maps, 0)
             maps.set_center_object(warrior)
             warrior.set_background(maps)
-            boss = BossMonster(TILE_SIZE * 14, 16 + TILE_SIZE * 12)
+            boss = BossMonster(TILE_SIZE * 16, 16 + TILE_SIZE * 12)
             boss.set_background(maps)
             game_world.add_object(boss, 0)
             for item in items:
@@ -156,6 +166,7 @@ def update():
     if items is not None:
         for item in items:
             if collide(item, warrior):
+                eatSound.play(1)
                 print("collide")
                 game_world.remove_object(item)
                 items.remove(item)
@@ -223,6 +234,7 @@ def lvl_up():
     warrior.exp += 1
     warrior.score += 5
     if warrior.exp == warrior.lvl:
+        lvlUpSound.play(1)
         warrior.lvl += 1
         warrior.maxHp += 10
         warrior.hp += 10

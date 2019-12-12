@@ -140,6 +140,8 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
     @staticmethod
     def do(warrior):
         if warrior.cnt < TILE_SIZE:
+            if warrior.cnt % 16 == 0:
+                warrior.stepSnd.play(1)
             if warrior.moveto == 'RIGHT':
                 warrior.x += 1
                 warrior.cnt += 1
@@ -180,6 +182,7 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
 class AttackState:
     @staticmethod
     def enter(warrior, event):
+        warrior.attSnd.play(1)
         warrior.timer = 0
         warrior.frame = 0
         # if event == ATK_UP:
@@ -249,6 +252,8 @@ class Warrior:
         self.bg = main_state.maps
         self.score = 0
         self.lvl = 1
+        self.stepSnd = load_wav('Sounds//snd_step.wav')
+        self.attSnd = load_music('Sounds//snd_puff.mp3')
         self.exp = 0
         self.maxHp = 50
         self.hp = 50
@@ -256,7 +261,7 @@ class Warrior:
         self.atkDamage = 8
         self.x, self.y = 16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6 #16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
-        self.image = load_image('warriorLR.png')
+        self.image = load_image('Images//warriorLR.png')
         self.dir = 1  # 1 = R , 0 = L
         self.frame = 0
         self.timer = 0

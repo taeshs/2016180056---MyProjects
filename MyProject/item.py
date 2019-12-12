@@ -6,7 +6,7 @@ class Item:
 
     def __init__(self, x, y, var):
         if Item.image == None:
-            Item.image = load_image('items.png')
+            Item.image = load_image('Images//items.png')
 
         self.hp = 999
         self.type = 'itm'

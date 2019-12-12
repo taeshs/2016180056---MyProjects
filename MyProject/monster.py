@@ -14,7 +14,7 @@ class Monster:
 
     def __init__(self, x, y):
         if Monster.image is None:
-            Monster.image = load_image('gnoll.png')
+            Monster.image = load_image('Images//gnoll.png')
         self.hp = 20
         self.atkDamage = 4
         self.x, self.y = x, y

@@ -11,7 +11,7 @@ image = None
 def enter():
     global image
     global font
-    image = load_image('chrome.png')
+    image = load_image('Images//chrome.png')
     font = load_font('fonts.ttf')
 
 

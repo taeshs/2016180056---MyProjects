@@ -201,7 +201,7 @@ class BossMonster:
         self.bt = BehaviorTree(monster_status)
 
     def update(self):
-        self.cx, self.cy = self.x - (self.bg.window_left * 32), self.y - (self.bg.window_bottom * 32)
+        self.cx, self.cy = self.x - (self.bg.window_left * 32) - 16, self.y - (self.bg.window_bottom * 32)
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         if self.turn == 1:
             self.bt.run()
@@ -221,17 +221,17 @@ class BossMonster:
 
     def draw(self):
         if self.state == 0:  # 7 8 9 10  monster.timer // 250
-            self.image.clip_draw(self.idl * 12, self.dir * 16, 12, 16, self.cx, self.cy, 24, 32)
+            self.image.clip_draw(self.idl * 16, self.dir * 16, 16, 16, self.cx, self.cy, 32, 32)
         if self.state == 1:
-            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.cx,
-                                 self.cy, 24, 32)
+            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * 16, self.dir * 16, 16, 16, self.cx,
+                                 self.cy, 32, 32)
         if self.state == 2:
-            self.image.clip_draw(3 * 12, self.dir * 16, 12, 16, self.cx,
-                                 self.cy, 24, 32)
+            self.image.clip_draw(3 * 16, self.dir * 16, 16, 16, self.cx,
+                                 self.cy, 32, 32)
             # 3, 4
         if self.state == 3:
-            self.image.clip_draw(6 * 12, self.dir * 16, 12, 16, self.cx,
-                                 self.cy, 24, 32)
+            self.image.clip_draw(6 * 16, self.dir * 16, 16, 16, self.cx,
+                                 self.cy, 32, 32)
 
     def return_loc(self):
         return self.tileX, self.tileY

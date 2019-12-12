@@ -12,8 +12,8 @@ def enter():
     global image
     global font
     global skull
-    image = load_image('chrome.png')
-    skull = load_image('warriorLR.png')
+    image = load_image('Images//chrome.png')
+    skull = load_image('Images//warriorLR.png')
     font = load_font('fonts.ttf')
 
 

@@ -6,7 +6,7 @@ class FloorTrigger:
 
     def __init__(self, x, y):
         if FloorTrigger.image == None:
-            FloorTrigger.image = load_image('tiles0.png')
+            FloorTrigger.image = load_image('Images//tiles0.png')
         self.hp = 999
         self.type = 'map'
         self.x, self.y = x+16, y+16

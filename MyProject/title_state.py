@@ -17,9 +17,9 @@ def enter():
     global banner
     global tile
     global play
-    banner = load_image('banners.png')
-    tile = load_image('tiles0.png')
-    play = load_image('play.png')
+    banner = load_image('Images//banners.png')
+    tile = load_image('Images//tiles0.png')
+    play = load_image('Images//play.png')
 
 
 def exit():

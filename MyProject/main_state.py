@@ -14,6 +14,7 @@ import status_pause
 from warrior import Warrior
 import map
 from monster import Monster
+from scorpio import Scorpio
 from boss import BossMonster
 from item import Item
 from floorTrigger import FloorTrigger
@@ -93,6 +94,8 @@ def enter():
             n += 1
             if t == 0:
                 monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
+            else:
+                monsters.append(Scorpio(mx * 32 + 16, my * 32 + 16))
     game_world.add_objects(monsters, 1)
 
     global items

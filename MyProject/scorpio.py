@@ -19,8 +19,8 @@ class Scorpio:
     def __init__(self, x, y):
         if Scorpio.image is None:
             Scorpio.image = load_image('Images//scorpio.png')
-        self.hp = 20
-        self.atkDamage = 4
+        self.hp = 15
+        self.atkDamage = 6
         self.atkPose = 0
         self.dx, self.dy = 18, 17
         self.x, self.y = x, y

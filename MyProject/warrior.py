@@ -251,14 +251,15 @@ class Warrior:
     def __init__(self):
         self.bg = main_state.maps
         self.score = 0
+        self.gameWon = 0
         self.lvl = 1
         self.stepSnd = load_wav('Sounds//snd_step.wav')
-        self.attSnd = load_music('Sounds//snd_puff.mp3')
+        self.attSnd = load_wav('Sounds//snd_puff.wav')
         self.exp = 0
         self.maxHp = 50
         self.hp = 50
         self.hpPercent = 1
-        self.atkDamage = 8
+        self.atkDamage = 800
         self.x, self.y = 16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6 #16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.image = load_image('Images//warriorLR.png')

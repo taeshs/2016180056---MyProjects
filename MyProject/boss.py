@@ -1,7 +1,9 @@
 from pico2d import *
 import map
 import main_state
+import game_over
 import game_world
+import game_framework
 from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
 
 TILE_SIZE = 32
@@ -13,7 +15,7 @@ class BossMonster:
 
     def __init__(self, x, y):
         if BossMonster.image is None:
-            BossMonster.image = load_image('king.png')
+            BossMonster.image = load_image('Images//king.png')
         self.hp = 200
         self.atkDamage = 15
         self.cx, self.cy = x, y
@@ -66,7 +68,7 @@ class BossMonster:
         disrupt = 0
         warrior = main_state.get_warrior()
         distance = (warrior.tileX - self.tileX) ** 2 + (warrior.tileY - self.tileY) ** 2
-        if distance < 9:
+        if distance < 16:
             if warrior.tileX < self.tileX:
                 self.dir = 0
             elif warrior.tileX > self.tileX:
@@ -215,9 +217,10 @@ class BossMonster:
         if self.state == 1:
             self.deadTimer += 1
             if self.deadTimer == 96:
-                main_state.make_item(self.x, self.y)
-                main_state.lvl_up()
+                warrior = main_state.get_warrior()
                 game_world.remove_object(self)
+                warrior.gameWon = 1
+                game_framework.push_state(game_over)
 
     def draw(self):
         if self.state == 0:  # 7 8 9 10  monster.timer // 250

@@ -31,6 +31,7 @@ HP_BAR = None
 hpPercent = None
 once = None
 charImage = None
+bgm = None
 font = None
 items = None
 floorTriggers = None
@@ -61,12 +62,12 @@ def enter():
     font = load_image('Images//font2x.png')
 
     global eatSound
-    eatSound = load_music('Sounds//snd_item.mp3')
+    eatSound = load_wav('Sounds//snd_item.wav')
     global lvlUpSound
-    lvlUpSound = load_music('Sounds//snd_levelup.mp3')
+    lvlUpSound = load_wav('Sounds//snd_levelup.wav')
     lvlUpSound.set_volume(64)
     global bgm
-    bgm = load_wav('Sounds//game.wav')
+    bgm = load_music('Sounds//game.mp3')
     bgm.set_volume(128)
     bgm.repeat_play()
 

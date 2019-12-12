@@ -12,9 +12,17 @@ def enter():
     global image
     global font
     global skull
+    global vessel
+    global snd
     image = load_image('Images//chrome.png')
     skull = load_image('Images//warriorLR.png')
+    vessel = load_image('Images//surface.png')
+    snd = load_wav('Sounds//snd_boss.wav')
     font = load_font('fonts.ttf')
+
+    global timer
+    timer = 0
+    main_state.bgm.stop()
 
 
 def exit():
@@ -37,17 +45,28 @@ def draw():
     clear_canvas()
     for game_objects in game_world.all_objects():
         game_objects.draw()
-    image.clip_draw_to_origin(30, 0, 34, 32, 0, 150, 300, 300)
-    skull.clip_draw_to_origin(96, 15, 60, 15, 90, 330, 150, 37)
-    font.draw(80, 405, 'YOU ARE DEAD!', (0, 0, 0))
-    font.draw(80, 310, 'Level : %3d' % main_state.warrior.lvl, (0, 0, 0))
-    font.draw(80, 290, 'SCORE : %3d' % main_state.warrior.score, (0, 0, 0))
-    font.draw(75, 250, '    ESC TO TITLE', (0, 0, 0))
+    if main_state.warrior.gameWon == 0:
+        image.clip_draw_to_origin(30, 0, 34, 32, 0, 150, 300, 300)
+        skull.clip_draw_to_origin(96, 15, 60, 15, 90, 330, 150, 37)
+        font.draw(80, 405, 'YOU ARE DEAD!', (0, 0, 0))
+        font.draw(80, 310, 'Level : %3d' % main_state.warrior.lvl, (0, 0, 0))
+        font.draw(80, 290, 'SCORE : %3d' % main_state.warrior.score, (0, 0, 0))
+        font.draw(75, 250, '    ESC TO TITLE', (0, 0, 0))
+    else:
+        vessel.clip_draw_to_origin(0,0,88,128,0,0,320,576)
+        image.clip_draw_to_origin(30, 0, 34, 32, 0, 150, 300, 300)
+        font.draw(80, 405, 'YOU GOT THE BOSS!', (0, 0, 0))
+        font.draw(80, 310, 'Level : %3d' % main_state.warrior.lvl, (0, 0, 0))
+        font.draw(80, 290, 'SCORE : %3d' % main_state.warrior.score, (0, 0, 0))
+        font.draw(75, 250, '    ESC TO TITLE', (0, 0, 0))
     update_canvas()
 
 
 def update():
-    pass
+    global timer
+    timer += 1
+    if timer == 75:
+        snd.play(1)
 
 
 def pause():

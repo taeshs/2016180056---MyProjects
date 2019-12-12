@@ -65,8 +65,9 @@ def draw():
 def update():
     global timer
     timer += 1
-    if timer == 75:
-        snd.play(1)
+    if main_state.warrior.gameWon == 1:
+        if timer == 75:
+            snd.play(1)
 
 
 def pause():

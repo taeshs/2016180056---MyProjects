@@ -68,7 +68,12 @@ class MoveState:  # 공격 추가 : 바로 옆칸에 monster 존재 시 and 그�
         for game_object in game_world.all_objects():
             if game_object.type == 'mon':
                 game_object.turn = 0
-        if warrior.moving == 0:
+        warrior.movable = 1
+        for game_object in game_world.all_objects():
+            if game_object.type == 'mon':
+                if game_object.moving == 1:
+                    warrior.movable = 0
+        if warrior.moving == 0 and warrior.movable == 1:
             print("runstate")
             if event == RIGHT_KEYDOWN:
                 warrior.dir = 1
@@ -251,6 +256,7 @@ class Warrior:
     def __init__(self):
         self.bg = main_state.maps
         self.score = 0
+        self.movable = 1
         self.gameWon = 0
         self.lvl = 1
         self.stepSnd = load_wav('Sounds//snd_step.wav')
@@ -259,8 +265,8 @@ class Warrior:
         self.maxHp = 50
         self.hp = 50
         self.hpPercent = 1
-        self.atkDamage = 800
-        self.x, self.y = 16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6 #16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3
+        self.atkDamage = 8
+        self.x, self.y = 16 + TILE_SIZE * 2, 16 + TILE_SIZE * 3 #16 + TILE_SIZE * 17, 16 + TILE_SIZE * 6 #
         self.tileX, self.tileY = (self.x - 16) // TILE_SIZE, (self.y - 16) // TILE_SIZE
         self.image = load_image('Images//warriorLR.png')
         self.dir = 1  # 1 = R , 0 = L

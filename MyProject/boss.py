@@ -8,6 +8,10 @@ from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
 
 TILE_SIZE = 32
 
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
+
 # bt 행동우선순위  - attack - move - idle
 
 class BossMonster:
@@ -16,17 +20,20 @@ class BossMonster:
     def __init__(self, x, y):
         if BossMonster.image is None:
             BossMonster.image = load_image('Images//king.png')
-        self.hp = 200
+        self.hp = 120
         self.atkDamage = 15
+        self.atkPose = 0
         self.cx, self.cy = x, y
         self.x, self.y = x, y
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.dir = 1
+        self.moveDir = 0
         self.frame = 0
         self.timer = 0
         self.type = 'mon'
         self.isDead = False
         self.deadTimer = 0
+        self.atkTimer = 0
         self.turn = 0  # turn == 1 : movable
         self.cnt = 0
         self.xy = 0
@@ -52,7 +59,7 @@ class BossMonster:
     def is_nearing(self):
         warrior = main_state.get_warrior()
         distance = (warrior.tileX - self.tileX) ** 2 + (warrior.tileY - self.tileY) ** 2
-        if distance == 1:
+        if distance == 1 and self.moving == 0:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -60,8 +67,8 @@ class BossMonster:
     def attack_warrior(self):
         warrior = main_state.get_warrior()
         warrior.get_damage(self.atkDamage)
-        self.turn = 0
         self.state = 2
+        self.turn = 0
         return BehaviorTree.SUCCESS
 
     def find_warrior(self):
@@ -73,56 +80,72 @@ class BossMonster:
                 self.dir = 0
             elif warrior.tileX > self.tileX:
                 self.dir = 1
-            if ((warrior.tileX - self.tileX) ** 2) > ((warrior.tileY - self.tileY) ** 2):
-                if warrior.tileX < self.tileX and self.bg.mapli[self.tileY][self.tileX - 1] == 2:
-                    for game_object in game_world.all_objects():
-                        if game_object.type == 'mon':
-                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                            if self.tileX - 1 == check_monster_tileX and self.tileY == check_monster_tileY:
-                                disrupt = 1
-                    if disrupt == 0:
-                        self.x -= TILE_SIZE
-                        self.state = 3
-                        self.turn = 0
-                elif warrior.tileX > self.tileX and self.bg.mapli[self.tileY][self.tileX + 1] == 2:
-                    for game_object in game_world.all_objects():
-                        if game_object.type == 'mon':
-                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                            if self.tileX + 1 == check_monster_tileX and self.tileY == check_monster_tileY:
-                                disrupt = 1
-                    if disrupt == 0:
-                        self.x += TILE_SIZE
-                        self.state = 3
-                        self.turn = 0
-            elif ((warrior.tileX - self.tileX) ** 2) == ((warrior.tileY - self.tileY) ** 2):  # =
-                if warrior.tileX < self.tileX:
-                    if self.bg.mapli[self.tileY][self.tileX - 1] == 2:
+            if self.moving == 0:
+                if ((warrior.tileX - self.tileX) ** 2) > ((warrior.tileY - self.tileY) ** 2):
+                    if warrior.tileX < self.tileX and self.bg.mapli[self.tileY][self.tileX - 1] == 2:
                         for game_object in game_world.all_objects():
                             if game_object.type == 'mon':
                                 check_monster_tileX, check_monster_tileY = game_object.return_loc()
                                 if self.tileX - 1 == check_monster_tileX and self.tileY == check_monster_tileY:
                                     disrupt = 1
                         if disrupt == 0:
-                            self.x -= TILE_SIZE
-                            self.state = 3
-                            self.turn = 0
-                    else:
-                        disrupt = 1
-                elif warrior.tileX > self.tileX:
-                    if self.bg.mapli[self.tileY][self.tileX + 1] == 2:
+                            self.moveDir = 1            # -x
+                            self.cnt = 0
+                    elif warrior.tileX > self.tileX and self.bg.mapli[self.tileY][self.tileX + 1] == 2:
                         for game_object in game_world.all_objects():
                             if game_object.type == 'mon':
                                 check_monster_tileX, check_monster_tileY = game_object.return_loc()
                                 if self.tileX + 1 == check_monster_tileX and self.tileY == check_monster_tileY:
                                     disrupt = 1
                         if disrupt == 0:
-                            self.x += TILE_SIZE
-                            self.state = 3
-                            self.turn = 0
-                    else:
-                        disrupt = 1
-                if disrupt == 1:
-                    disrupt = 0
+                            self.moveDir = 0            # +x
+                            self.cnt = 0
+                elif ((warrior.tileX - self.tileX) ** 2) == ((warrior.tileY - self.tileY) ** 2):  # =
+                    if warrior.tileX < self.tileX:
+                        if self.bg.mapli[self.tileY][self.tileX - 1] == 2:
+                            for game_object in game_world.all_objects():
+                                if game_object.type == 'mon':
+                                    check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                                    if self.tileX - 1 == check_monster_tileX and self.tileY == check_monster_tileY:
+                                        disrupt = 1
+                            if disrupt == 0:
+                                self.moveDir = 1            # -x
+                                self.cnt = 0
+                        else:
+                            disrupt = 1
+                    elif warrior.tileX > self.tileX:
+                        if self.bg.mapli[self.tileY][self.tileX + 1] == 2:
+                            for game_object in game_world.all_objects():
+                                if game_object.type == 'mon':
+                                    check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                                    if self.tileX + 1 == check_monster_tileX and self.tileY == check_monster_tileY:
+                                        disrupt = 1
+                            if disrupt == 0:
+                                self.moveDir = 0            # +x
+                                self.cnt = 0
+                        else:
+                            disrupt = 1
+                    if disrupt == 1:
+                        disrupt = 0
+                        if warrior.tileY < self.tileY and self.bg.mapli[self.tileY - 1][self.tileX] == 2:
+                            for game_object in game_world.all_objects():
+                                if game_object.type == 'mon':
+                                    check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                                    if self.tileX == check_monster_tileX and self.tileY - 1 == check_monster_tileY:
+                                        disrupt = 1
+                            if disrupt == 0:
+                                self.moveDir = 3  # -y
+                                self.cnt = 0
+                        elif warrior.tileY > self.tileY and self.bg.mapli[self.tileY + 1][self.tileX] == 2:
+                            for game_object in game_world.all_objects():
+                                if game_object.type == 'mon':
+                                    check_monster_tileX, check_monster_tileY = game_object.return_loc()
+                                    if self.tileX == check_monster_tileX and self.tileY + 1 == check_monster_tileY:
+                                        disrupt = 1
+                            if disrupt == 0:
+                                self.moveDir = 2  # +y
+                                self.cnt = 0
+                else:
                     if warrior.tileY < self.tileY and self.bg.mapli[self.tileY - 1][self.tileX] == 2:
                         for game_object in game_world.all_objects():
                             if game_object.type == 'mon':
@@ -130,9 +153,8 @@ class BossMonster:
                                 if self.tileX == check_monster_tileX and self.tileY - 1 == check_monster_tileY:
                                     disrupt = 1
                         if disrupt == 0:
-                            self.y -= TILE_SIZE
-                            self.state = 3
-                            self.turn = 0
+                            self.moveDir = 3  # -y
+                            self.cnt = 0
                     elif warrior.tileY > self.tileY and self.bg.mapli[self.tileY + 1][self.tileX] == 2:
                         for game_object in game_world.all_objects():
                             if game_object.type == 'mon':
@@ -140,32 +162,8 @@ class BossMonster:
                                 if self.tileX == check_monster_tileX and self.tileY + 1 == check_monster_tileY:
                                     disrupt = 1
                         if disrupt == 0:
-                            self.y += TILE_SIZE
-                            self.state = 3
-                            self.turn = 0
-            else:
-                if warrior.tileY < self.tileY and self.bg.mapli[self.tileY - 1][self.tileX] == 2:
-                    for game_object in game_world.all_objects():
-                        if game_object.type == 'mon':
-                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                            if self.tileX == check_monster_tileX and self.tileY - 1 == check_monster_tileY:
-                                disrupt = 1
-                    if disrupt == 0:
-                        self.y -= TILE_SIZE
-                        self.state = 3
-                        self.turn = 0
-                elif warrior.tileY > self.tileY and self.bg.mapli[self.tileY + 1][self.tileX] == 2:
-                    for game_object in game_world.all_objects():
-                        if game_object.type == 'mon':
-                            check_monster_tileX, check_monster_tileY = game_object.return_loc()
-                            if self.tileX == check_monster_tileX and self.tileY + 1 == check_monster_tileY:
-                                disrupt = 1
-                    if disrupt == 0:
-                        self.y += TILE_SIZE
-                        self.state = 3
-                        self.turn = 0
-            self.state = 3
-            self.turn = 0
+                            self.moveDir = 2  # +y
+                            self.cnt = 0
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -173,7 +171,27 @@ class BossMonster:
 
     def move_to_warrior(self):
         self.state = 3
-        self.turn = 0
+        if self.cnt < TILE_SIZE:
+            if self.moveDir == 0:
+                self.x += 1
+                self.cnt += 1
+            elif self.moveDir == 1:
+                self.x -= 1
+                self.cnt += 1
+            elif self.moveDir == 2:
+                self.y += 1
+                self.cnt += 1
+            elif self.moveDir == 3:
+                self.y -= 1
+                self.cnt += 1
+            self.moving = 1
+        else:
+            self.moving = 0
+            self.turn = 0
+            self.frame = 0
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.frame > 9:  # 조정해.
+            self.frame = 1
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
@@ -221,19 +239,32 @@ class BossMonster:
                 game_world.remove_object(self)
                 warrior.gameWon = 1
                 game_framework.push_state(game_over)
+        if self.state == 2:
+            self.atkTimer = (self.atkTimer + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+            if self.atkTimer < 7:  # 조정해.
+                if self.atkTimer < 3:
+                    self.atkPose = 1
+                elif self.atkTimer < 5:
+                    self.atkPose = 2
+                else:
+                    self.atkPose = 3
+            else:
+                self.atkTimer = 0
+                self.atkPose = 0
+                self.state = 0
 
     def draw(self):
         if self.state == 0:  # 7 8 9 10  monster.timer // 250
             self.image.clip_draw(self.idl * 16, self.dir * 16, 16, 16, self.cx, self.cy, 32, 32)
         if self.state == 1:
-            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * 16, self.dir * 16, 16, 16, self.cx,
+            self.image.clip_draw((((self.deadTimer // 16) % 6) + 13) * 16, self.dir * 16, 16, 16, self.cx,
                                  self.cy, 32, 32)
         if self.state == 2:
-            self.image.clip_draw(3 * 16, self.dir * 16, 16, 16, self.cx,
+            self.image.clip_draw((self.atkPose + 8) * 16, self.dir * 16, 16, 16, self.cx,
                                  self.cy, 32, 32)
             # 3, 4
-        if self.state == 3:
-            self.image.clip_draw(6 * 16, self.dir * 16, 16, 16, self.cx,
+        if self.state == 3: # 8
+            self.image.clip_draw(int(self.frame) * 16, self.dir * 16, 15, 16, self.cx,
                                  self.cy, 32, 32)
 
     def return_loc(self):
@@ -248,3 +279,7 @@ class BossMonster:
 
     def set_background(self, maps):
         self.bg = maps
+
+
+
+# 보스 애니메이션 할수있으면 하자.

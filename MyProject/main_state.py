@@ -52,6 +52,7 @@ def collide(a, b):
 # 6, 18
 
 def enter():
+    game_world.clear()
     global UI
     global HP_BAR
     UI = load_image('Images//status_pane.png')
@@ -84,7 +85,7 @@ def enter():
     # monster = Monster(176, 240)
     # monster2 = Monster(240, 240)  # spawn in 240, 240
     n = 0
-    while n < 10:
+    while n < 12:
         mx = random.randint(0, map.tileX - 1)
         my = random.randint(0, map.tileY - 1)
         if map.map1[my][mx] == 2:
@@ -172,12 +173,12 @@ def update():
                 game_world.remove_object(item)
                 items.remove(item)
                 if item.var == 1:
-                    warrior.hp += 10
+                    warrior.hp += clamp(10, warrior.maxHp // 5, 999)
                 elif item.var == 2:
                     warrior.atkDamage += 5
                 elif item.var == 3:
                     warrior.maxHp += 10
-                    warrior.hp += 5
+                    warrior.hp += 10
 
     for game_object in game_world.all_objects():
         if game_object.hp <= 0:
@@ -217,12 +218,12 @@ def make_item(x, y):
         this_item.set_background(maps)
         items.append(this_item)
         game_world.add_object(this_item, 1)
-    elif luck == 1 or luck == 2:
+    elif 0 < luck < 4:
         this_item = Item(x, y, 2)
         this_item.set_background(maps)
         items.append(this_item)
         game_world.add_object(this_item, 1)
-    elif luck == 5 or luck == 6:
+    elif 4 < luck < 8:
         this_item = Item(x, y, 3)
         this_item.set_background(maps)
         items.append(this_item)

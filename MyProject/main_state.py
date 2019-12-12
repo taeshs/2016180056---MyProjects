@@ -174,6 +174,7 @@ def update():
         for item in items:
             if collide(item, warrior):
                 eatSound.play(1)
+                warrior.score += 3
                 print("collide")
                 game_world.remove_object(item)
                 items.remove(item)

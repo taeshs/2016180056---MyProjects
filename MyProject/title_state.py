@@ -7,6 +7,7 @@ from pico2d import *
 import game_framework
 import main_state
 import map
+import how_to_play
 
 
 name = "TiltleState"
@@ -17,9 +18,11 @@ def enter():
     global banner
     global tile
     global play
+    global font
     banner = load_image('Images//banners.png')
     tile = load_image('Images//tiles0.png')
     play = load_image('Images//play.png')
+    font = load_font('fonts.ttf')
 
 
 def exit():
@@ -51,6 +54,9 @@ def handle_events():
             elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
                 print("변경")
                 game_framework.change_state(main_state)
+            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_h):
+                print("변경")
+                game_framework.push_state(how_to_play)
 
 
 def update():
@@ -75,7 +81,8 @@ def draw():
                            map.fixsize * 2, map.fixsize * 2)
     banner.clip_draw(0, 192, 128, 64, map.windsizX / 2, map.windsizY / 3 * 2, 256, 128)
     play.clip_draw(0, 0, 107, 133, map.windsizX / 2, map.windsizY / 3 * 1, 107, 133)
-
+    font.draw(130, 180, 'SPACE', (255, 255, 255))
+    font.draw(100, 90, 'HOW TO PLAY : H', (255, 255, 255))
     update_canvas()
 
 # 16 * (n % 10) , 16 * (n / 10)

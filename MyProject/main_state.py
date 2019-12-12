@@ -86,11 +86,13 @@ def enter():
     # monster2 = Monster(240, 240)  # spawn in 240, 240
     n = 0
     while n < 12:
+        t = random.randint(0, 1)
         mx = random.randint(0, map.tileX - 1)
         my = random.randint(0, map.tileY - 1)
         if map.map1[my][mx] == 2:
             n += 1
-            monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
+            if t == 0:
+                monsters.append(Monster(mx * 32 + 16, my * 32 + 16))
     game_world.add_objects(monsters, 1)
 
     global items

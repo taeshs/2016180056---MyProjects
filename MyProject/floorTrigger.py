@@ -17,7 +17,7 @@ class FloorTrigger:
 
     def draw(self):
         self.image.clip_draw(128, 48, 16, 16, self.cx, self.cy, 32, 32)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.cx - 5, self.cy - 5, self.cx + 5, self.cy + 5

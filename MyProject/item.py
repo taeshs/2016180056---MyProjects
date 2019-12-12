@@ -24,7 +24,7 @@ class Item:
             self.image.clip_draw(96, 208, 16, 16, self.cx, self.cy, 32, 32)
         if self.var == 3:
             self.image.clip_draw(64, 192, 16, 16, self.cx, self.cy, 32, 32)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.cx - 15, self.cy - 15, self.cx + 15, self.cy + 15

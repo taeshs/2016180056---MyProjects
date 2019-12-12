@@ -22,10 +22,11 @@ class Monster:
         self.hp = 20
         self.atkDamage = 4
         self.atkPose = 0
+        self.dx, self.dy = 12, 16
         self.x, self.y = x, y
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.dir = 1
-        self.moveDir = 0
+        self.moveDir = 5
         self.frame = 0
         self.timer = 0
         self.type = 'mon'
@@ -182,6 +183,8 @@ class Monster:
             elif self.moveDir == 3:
                 self.y -= 1
                 self.cnt += 1
+            if self.moveDir == 5:
+                self.cnt += 32
             self.moving = 1
         else:
             self.moving = 0
@@ -251,15 +254,15 @@ class Monster:
 
     def draw(self):
         if self.state == 0:  # 7 8 9 10  monster.timer // 250
-            self.image.clip_draw(self.idl * 12, self.dir * 16, 12, 16, self.cx, self.cy, 24, 32)
+            self.image.clip_draw(self.idl * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx, self.cy, 24, 32)
         if self.state == 1:
-            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * 12, self.dir * 16, 12, 16, self.cx,
+            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx,
                                  self.cy, 24, 32)
         if self.state == 2:
-            self.image.clip_draw((self.atkPose + 1) * 12, self.dir * 16, 12, 16, self.cx,
+            self.image.clip_draw((self.atkPose + 1) * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx,
                                  self.cy, 24, 32)
         if self.state == 3:
-            self.image.clip_draw((int(self.frame) + 3) * 12, self.dir * 16, 12, 16, self.cx,
+            self.image.clip_draw((int(self.frame) + 3) * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx,
                                  self.cy, 24, 32)
 
     def return_loc(self):

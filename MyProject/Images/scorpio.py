@@ -1,7 +1,6 @@
 from pico2d import *
 import map
 import main_state
-import game_over
 import game_world
 import game_framework
 from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
@@ -14,20 +13,20 @@ FRAMES_PER_ACTION = 8
 
 # bt 행동우선순위  - attack - move - idle
 
-class BossMonster:
+class Scorpio:
     image = None
 
     def __init__(self, x, y):
-        if BossMonster.image is None:
-            BossMonster.image = load_image('Images//king.png')
-        self.hp = 120
-        self.atkDamage = 15
+        if Scorpio.image is None:
+            Scorpio.image = load_image('Images//scorpio.png')
+        self.hp = 20
+        self.atkDamage = 4
         self.atkPose = 0
-        self.cx, self.cy = x, y
+        self.dx, self.dy = 18, 17
         self.x, self.y = x, y
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         self.dir = 1
-        self.moveDir = 0
+        self.moveDir = 5
         self.frame = 0
         self.timer = 0
         self.type = 'mon'
@@ -75,7 +74,7 @@ class BossMonster:
         disrupt = 0
         warrior = main_state.get_warrior()
         distance = (warrior.tileX - self.tileX) ** 2 + (warrior.tileY - self.tileY) ** 2
-        if distance < 16:
+        if distance < 9:
             if warrior.tileX < self.tileX:
                 self.dir = 0
             elif warrior.tileX > self.tileX:
@@ -89,7 +88,7 @@ class BossMonster:
                                 if self.tileX - 1 == check_monster_tileX and self.tileY == check_monster_tileY:
                                     disrupt = 1
                         if disrupt == 0:
-                            self.moveDir = 1            # -x
+                            self.moveDir = 1  # -x
                             self.cnt = 0
                     elif warrior.tileX > self.tileX and self.bg.mapli[self.tileY][self.tileX + 1] == 2:
                         for game_object in game_world.all_objects():
@@ -98,7 +97,7 @@ class BossMonster:
                                 if self.tileX + 1 == check_monster_tileX and self.tileY == check_monster_tileY:
                                     disrupt = 1
                         if disrupt == 0:
-                            self.moveDir = 0            # +x
+                            self.moveDir = 0  # +x
                             self.cnt = 0
                 elif ((warrior.tileX - self.tileX) ** 2) == ((warrior.tileY - self.tileY) ** 2):  # =
                     if warrior.tileX < self.tileX:
@@ -109,7 +108,7 @@ class BossMonster:
                                     if self.tileX - 1 == check_monster_tileX and self.tileY == check_monster_tileY:
                                         disrupt = 1
                             if disrupt == 0:
-                                self.moveDir = 1            # -x
+                                self.moveDir = 1  # -x
                                 self.cnt = 0
                         else:
                             disrupt = 1
@@ -121,7 +120,7 @@ class BossMonster:
                                     if self.tileX + 1 == check_monster_tileX and self.tileY == check_monster_tileY:
                                         disrupt = 1
                             if disrupt == 0:
-                                self.moveDir = 0            # +x
+                                self.moveDir = 0  # +x
                                 self.cnt = 0
                         else:
                             disrupt = 1
@@ -184,13 +183,16 @@ class BossMonster:
             elif self.moveDir == 3:
                 self.y -= 1
                 self.cnt += 1
+            if self.moveDir == 5:
+                self.cnt += 32
             self.moving = 1
         else:
             self.moving = 0
             self.turn = 0
             self.frame = 0
+            self.state = 0
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
-        if self.frame > 9:  # 조정해.
+        if self.frame > 4:  # 조정해.
             self.frame = 1
         return BehaviorTree.SUCCESS
 
@@ -221,7 +223,7 @@ class BossMonster:
         self.bt = BehaviorTree(monster_status)
 
     def update(self):
-        self.cx, self.cy = self.x - (self.bg.window_left * 32) - 16, self.y - (self.bg.window_bottom * 32)
+        self.cx, self.cy = self.x - (self.bg.window_left * 32), self.y - (self.bg.window_bottom * 32)
         self.tileX, self.tileY = (self.x - 16) // 32, (self.y - 16) // 32
         if self.turn == 1:
             self.bt.run()
@@ -235,20 +237,16 @@ class BossMonster:
         if self.state == 1:
             self.deadTimer += 1
             if self.deadTimer == 96:
-                warrior = main_state.get_warrior()
+                main_state.make_item(self.x, self.y)
+                main_state.lvl_up()
                 game_world.remove_object(self)
-                warrior.gameWon = 1
-                warrior.score += 50
-                game_framework.push_state(game_over)
         if self.state == 2:
             self.atkTimer = (self.atkTimer + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
-            if self.atkTimer < 7:  # 조정해.
+            if self.atkTimer < 5:  # 조정해.
                 if self.atkTimer < 3:
                     self.atkPose = 1
-                elif self.atkTimer < 5:
-                    self.atkPose = 2
                 else:
-                    self.atkPose = 3
+                    self.atkPose = 2
             else:
                 self.atkTimer = 0
                 self.atkPose = 0
@@ -256,16 +254,15 @@ class BossMonster:
 
     def draw(self):
         if self.state == 0:  # 7 8 9 10  monster.timer // 250
-            self.image.clip_draw(self.idl * 16, self.dir * 16, 16, 16, self.cx, self.cy, 32, 32)
+            self.image.clip_draw(self.idl * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx, self.cy, 32, 32)
         if self.state == 1:
-            self.image.clip_draw((((self.deadTimer // 16) % 6) + 13) * 16, self.dir * 16, 16, 16, self.cx,
+            self.image.clip_draw((((self.deadTimer // 16) % 6) + 7) * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx,
                                  self.cy, 32, 32)
         if self.state == 2:
-            self.image.clip_draw((self.atkPose + 8) * 16, self.dir * 16, 16, 16, self.cx,
+            self.image.clip_draw((self.atkPose + 1) * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx,
                                  self.cy, 32, 32)
-            # 3, 4
-        if self.state == 3: # 8
-            self.image.clip_draw(int(self.frame) * 16, self.dir * 16, 15, 16, self.cx,
+        if self.state == 3:
+            self.image.clip_draw((int(self.frame) + 3) * self.dx, self.dir * self.dy, self.dx, self.dy, self.cx,
                                  self.cy, 32, 32)
 
     def return_loc(self):
@@ -273,14 +270,10 @@ class BossMonster:
 
     def get_damage(self, damage):
         self.hp -= damage
-        print("BOSS's HP:", self.hp)
+        print("monster's HP:", self.hp)
 
     def dead(self):
         self.isDead = True
 
     def set_background(self, maps):
         self.bg = maps
-
-
-
-# 보스 애니메이션 할수있으면 하자.
